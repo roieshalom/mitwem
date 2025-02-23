@@ -1,42 +1,34 @@
-        // Define supported languages and corresponding translations
-        const translations = {
-            'en': {
-                title: 'Who Are the Girls With Today?',
-                checking: 'Checking...',
-                no_info: 'No info available today.',
-                error: 'Error loading data.'
-            },
-            'de': {
-                title: 'Mit wem sind Gali und Daniella heute zusammen?',
-                checking: 'Überprüfung...',
-                no_info: 'Keine Informationen für heute verfügbar.',
-                error: 'Fehler beim Laden der Daten.'
-            },
-            'he': {
-                title: 'עם מי גלי ודניאלה היום?',
-                checking: 'בודק...',
-                no_info: 'אין מידע זמין להיום.',
-                error: 'שגיאה בטעינת הנתונים.'
-            }
-        };
-
-        // Default to English if language is not supported
-        const lang = translations[primaryLang] ? primaryLang : 'en';
-
-        // Update the page content based on language
-        document.title = translations[lang].title;
-        document.querySelector('h1').textContent = translations[lang].title;
-        document.getElementById('status').textContent = translations[lang].checking;
-
-        // Fetch calendar data
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who Are the Girls With?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #status {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mit wem sind Gali und Daniella heute zusammen?</h1>
+    <p id="status">Checking...</p>
+    <script>
         const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
         const API_KEY = "AIzaSyC5Yn2gNLdoCIWctrsnPli-UBfUZ0qdsMY";
-
+        
         function getLocalISODate(date) {
             const tzOffset = date.getTimezoneOffset() * 60000;
             return new Date(date - tzOffset).toISOString().split("T")[0];
         }
-
+        
         const today = getLocalISODate(new Date());
         const timeMin = `${today}T00:00:00-00:00`;
         const timeMax = `${today}T23:59:59-00:00`;
@@ -47,12 +39,13 @@
                 if (data.items && data.items.length > 0) {
                     document.getElementById("status").textContent = data.items[0].summary;
                 } else {
-                    document.getElementById("status").textContent = translations[lang].no_info;
+                    document.getElementById("status").textContent = "No info available today.";
                 }
             })
             .catch(error => {
-                document.getElementById("status").textContent = translations[lang].error;
+                document.getElementById("status").textContent = "Error loading data.";
                 console.error("Error fetching calendar data:", error);
             });
-    });
-</script>
+    </script>
+</body>
+</html>
