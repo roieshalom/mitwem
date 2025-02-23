@@ -15,6 +15,10 @@
             font-weight: bold;
             margin-top: 20px;
         }
+        .rtl {
+            direction: rtl;
+            unicode-bidi: embed;
+        }
     </style>
 </head>
 <body>
@@ -43,7 +47,7 @@
                     error: 'Fehler beim Laden der Daten.'
                 },
                 'he': {
-                    title: 'עם מי גלי ודניאלה?',
+                    title: 'עם מי גלי ודניאלה היום?',
                     heading: 'עם מי גלי ודניאלה היום?',
                     checking: 'בודק...',
                     no_info: 'אין מידע זמין להיום.',
@@ -76,6 +80,11 @@
             document.getElementById('page-title').textContent = translations[lang].title;
             document.getElementById('page-heading').textContent = translations[lang].heading;
             document.getElementById('status').textContent = translations[lang].checking;
+
+            // Apply right-to-left (RTL) class for Hebrew
+            if (primaryLang === 'he') {
+                document.getElementById('page-heading').classList.add('rtl');
+            }
 
             // Fetch Google Calendar data
             const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
