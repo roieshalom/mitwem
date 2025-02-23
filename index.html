@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Who Are the Girls With?</title>
+    <title id="page-title">Who Are the Girls With?</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,9 +18,43 @@
     </style>
 </head>
 <body>
-    <h1>Mit wem sind Gali und Daniella heute zusammen?</h1>
+    <h1 id="page-heading">Mit wem sind Gali und Daniella heute zusammen?</h1>
     <p id="status">Checking...</p>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userLang = navigator.language || navigator.userLanguage;
+            const primaryLang = userLang.split('-')[0];
+            
+            const translations = {
+                'en': {
+                    title: 'Who Are the Girls With?',
+                    heading: 'Who Are the Girls With Today?',
+                    checking: 'Checking...',
+                    no_info: 'No info available today.',
+                    error: 'Error loading data.'
+                },
+                'de': {
+                    title: 'Mit wem sind Gali und Daniella?',
+                    heading: 'Mit wem sind Gali und Daniella heute zusammen?',
+                    checking: 'Überprüfung...',
+                    no_info: 'Keine Informationen für heute verfügbar.',
+                    error: 'Fehler beim Laden der Daten.'
+                },
+                'he': {
+                    title: 'עם מי גלי ודניאלה?',
+                    heading: 'עם מי גלי ודניאלה היום?',
+                    checking: 'בודק...',
+                    no_info: 'אין מידע זמין להיום.',
+                    error: 'שגיאה בטעינת הנתונים.'
+                }
+            };
+            
+            const lang = translations[primaryLang] ? primaryLang : 'en';
+            document.title = translations[lang].title;
+            document.getElementById('page-title').textContent = translations[lang].title;
+            document.getElementById('page-heading').textContent = translations[lang].heading;
+            document.getElementById('status').textContent = translations[lang].checking;
+        });
         const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
         const API_KEY = "AIzaSyC5Yn2gNLdoCIWctrsnPli-UBfUZ0qdsMY";
         
