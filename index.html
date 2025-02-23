@@ -1,77 +1,111 @@
-        const translations = {
-            'en': {
-                title: 'Who Are the Girls With?',
-                heading: 'Who Are the Girls With Today?',
-                checking: 'Checking...',
-                no_info: 'No info available today.',
-                error: 'Error loading data.'
-            },
-            'de': {
-                title: 'Mit wem sind Gali und Daniella?',
-                heading: 'Mit wem sind Gali und Daniella heute zusammen?',
-                checking: 'Überprüfung...',
-                no_info: 'Keine Informationen für heute verfügbar.',
-                error: 'Fehler beim Laden der Daten.'
-            },
-            'he': {
-                title: 'עם מי גלי ודניאלה?',
-                heading: 'עם מי גלי ודניאלה היום?',
-                checking: 'בודק...',
-                no_info: 'אין מידע זמין להיום.',
-                error: 'שגיאה בטעינת הנתונים.'
-            }
-        };
-        
-        const eventTranslations = {
-            'Roie': {
-                'en': 'With Dad',
-                'de': 'Mit Papa',
-                'he': 'עם אבא'
-            },
-            'Anat': {
-                'en': 'With Mom',
-                'de': 'Mit Mama',
-                'he': 'עם אמא'
-            }
-        };
-
-        function translateEvent(title, lang) {
-            return eventTranslations[title] && eventTranslations[title][lang] 
-                ? eventTranslations[title][lang] 
-                : title;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Who Are the Girls With?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
         }
-        
-        const lang = translations[primaryLang] ? primaryLang : 'en';
-        document.title = translations[lang].title;
-        document.getElementById('page-title').textContent = translations[lang].title;
-        document.getElementById('page-heading').textContent = translations[lang].heading;
-        document.getElementById('status').textContent = translations[lang].checking;
-    });
-    const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
-    const API_KEY = "AIzaSyC5Yn2gNLdoCIWctrsnPli-UBfUZ0qdsMY";
-    
-    function getLocalISODate(date) {
-        const tzOffset = date.getTimezoneOffset() * 60000;
-        return new Date(date - tzOffset).toISOString().split("T")[0];
-    }
-    
-    const today = getLocalISODate(new Date());
-    const timeMin = `${today}T00:00:00-00:00`;
-    const timeMax = `${today}T23:59:59-00:00`;
+        #status {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="page-heading">Mit wem sind Gali und Daniella heute zusammen?</h1>
+    <p id="status">Checking...</p>
 
-    fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.items && data.items.length > 0) {
-                const eventTitle = data.items[0].summary;
-                const translatedTitle = translateEvent(eventTitle, primaryLang);
-                document.getElementById("status").textContent = translatedTitle;
-            } else {
-                document.getElementById("status").textContent = "No info available today.";
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userLang = navigator.language || navigator.userLanguage;
+            const primaryLang = userLang.split('-')[0];
+
+            // Define language translations
+            const translations = {
+                'en': {
+                    title: 'Who Are the Girls With?',
+                    heading: 'Who Are the Girls With Today?',
+                    checking: 'Checking...',
+                    no_info: 'No info available today.',
+                    error: 'Error loading data.'
+                },
+                'de': {
+                    title: 'Mit wem sind Gali und Daniella?',
+                    heading: 'Mit wem sind Gali und Daniella heute zusammen?',
+                    checking: 'Überprüfung...',
+                    no_info: 'Keine Informationen für heute verfügbar.',
+                    error: 'Fehler beim Laden der Daten.'
+                },
+                'he': {
+                    title: 'עם מי גלי ודניאלה?',
+                    heading: 'עם מי גלי ודניאלה היום?',
+                    checking: 'בודק...',
+                    no_info: 'אין מידע זמין להיום.',
+                    error: 'שגיאה בטעינת הנתונים.'
+                }
+            };
+
+            // Define event translations (meeting names)
+            const eventTranslations = {
+                'Roie': {
+                    'en': 'With Dad',
+                    'de': 'Mit Papa',
+                    'he': 'עם אבא'
+                },
+                'Anat': {
+                    'en': 'With Mom',
+                    'de': 'Mit Mama',
+                    'he': 'עם אמא'
+                }
+            };
+
+            function translateEvent(title, lang) {
+                return eventTranslations[title] && eventTranslations[title][lang] 
+                    ? eventTranslations[title][lang] 
+                    : title;
             }
-        })
-        .catch(error => {
-            document.getElementById("status").textContent = "Error loading data.";
-            console.error("Error fetching calendar data:", error);
+
+            const lang = translations[primaryLang] ? primaryLang : 'en';
+            document.title = translations[lang].title;
+            document.getElementById('page-title').textContent = translations[lang].title;
+            document.getElementById('page-heading').textContent = translations[lang].heading;
+            document.getElementById('status').textContent = translations[lang].checking;
+
+            // Fetch Google Calendar data
+            const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
+            const API_KEY = "AIzaSyC5Yn2gNLdoCIWctrsnPli-UBfUZ0qdsMY";
+
+            function getLocalISODate(date) {
+                const tzOffset = date.getTimezoneOffset() * 60000;
+                return new Date(date - tzOffset).toISOString().split("T")[0];
+            }
+
+            const today = getLocalISODate(new Date());
+            const timeMin = `${today}T00:00:00-00:00`;
+            const timeMax = `${today}T23:59:59-00:00`;
+
+            fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.items && data.items.length > 0) {
+                        const eventTitle = data.items[0].summary;
+                        const translatedTitle = translateEvent(eventTitle, primaryLang);
+                        document.getElementById("status").textContent = translatedTitle;
+                    } else {
+                        document.getElementById("status").textContent = translations[lang].no_info;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("status").textContent = translations[lang].error;
+                    console.error("Error fetching calendar data:", error);
+                });
         });
-</script>
+    </script>
+</body>
+</html>
