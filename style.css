@@ -3,51 +3,25 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     padding: 20px;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    margin: 0; /* Ensures no unwanted spacing */
-    height: 100vh; /* Prevents excess height */
+    margin: 0; /* Ensures no extra spacing at the edges */
+    min-height: 100vh; /* Makes sure background covers full screen */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-=======
->>>>>>> parent of 356087b (Update style.css)
-=======
->>>>>>> parent of 356087b (Update style.css)
     background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
     background-size: 400% 400%;
     animation: gradientMove 8s ease infinite;
     color: white;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    overflow: hidden; /* Hides any extra scrollbars */
-=======
->>>>>>> parent of 356087b (Update style.css)
-=======
->>>>>>> parent of 356087b (Update style.css)
+    overflow-x: hidden; /* Prevents unwanted horizontal scrolling */
 }
 
-
-/* Heading styles */
 /* Heading styles */
 h1 {
     color: white;
     font-size: 28px;
-<<<<<<< HEAD
     text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
-    white-space: nowrap; /* Prevents shrinking & keeps text in one line */
-    overflow: visible; /* Ensures text can extend outside the box */
-    max-width: 100%; /* Allows full-width display */
-=======
-    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.35);
-    word-wrap: break-word; /* Ensures text wraps instead of shrinking */
-    overflow-wrap: break-word;
-    white-space: normal; /* Allows multi-line text */
-    max-width: 90%; /* Prevents stretching too wide on big screens */
->>>>>>> parent of f2eee29 (Update style.css)
 }
-
 
 /* Status message styling */
 #status {
@@ -61,18 +35,15 @@ h1 {
     transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
 }
 
-/* 🎨 Super Fun Hover Effect */
+/* ✨ Super Fun Hover Effect */
 #status:hover {
-    transform: scale(1.2); /* Keep the scale effect */
-    transform-origin: center; /* Ensures it scales from the center */
+    transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
     color: #fff;
     background: linear-gradient(45deg, #ff33cc, #ff66ff, #ff99ff);
     background-size: 200% 200%;
     animation: gradientHover 2s ease infinite;
     text-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
     cursor: pointer;
-    line-height: 1.2em; /* Maintains consistent spacing */
-    display: inline-block; /* Ensures scaling does not affect surrounding elements */
 }
 
 /* Animate Background */
@@ -100,7 +71,7 @@ h1 {
     h1 {
         font-size: 22px;
     }
-    
+
     #status {
         font-size: 24px;
         padding: 15px;
