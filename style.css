@@ -21,6 +21,10 @@ h1 {
     color: white;
     font-size: 28px;
     text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
+    word-wrap: break-word; /* Ensures text wraps instead of shrinking */
+    overflow-wrap: break-word;
+    white-space: normal; /* Allows multi-line text */
+    max-width: 90%; /* Prevents stretching too wide on big screens */
 }
 
 /* Status message styling */
