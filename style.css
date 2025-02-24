@@ -3,10 +3,17 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     padding: 20px;
+    margin: 0; /* Ensures no extra spacing at the edges */
+    min-height: 100vh; /* Makes sure background covers full screen */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
     background-size: 400% 400%;
     animation: gradientMove 8s ease infinite;
     color: white;
+    overflow-x: hidden; /* Prevents unwanted horizontal scrolling */
 }
 
 /* Heading styles */
