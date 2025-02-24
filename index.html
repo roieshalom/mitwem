@@ -90,7 +90,18 @@
                     if (data.items && data.items.length > 0) {
                         const eventTitle = data.items[0].summary;
                         const translatedTitle = translateEvent(eventTitle, primaryLang);
-                        document.getElementById("status").textContent = translatedTitle;
+                        const statusElement = document.getElementById("status");
+statusElement.textContent = translatedTitle;
+
+// Add hover effect for changing text and emoji
+statusElement.addEventListener("mouseenter", function() {
+    statusElement.textContent = "✨ " + translatedTitle + " ✨";
+});
+
+statusElement.addEventListener("mouseleave", function() {
+    statusElement.textContent = translatedTitle; // Reset to original text
+});
+
                     } else {
                         document.getElementById("status").textContent = translations[lang].no_info;
                     }
