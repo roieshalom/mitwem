@@ -42,14 +42,18 @@ h1 {
 
 /* 🎨 Super Fun Hover Effect */
 #status:hover {
-    transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
+    transform: scale(1.2); /* Keep the scale effect */
+    transform-origin: center; /* Ensures it scales from the center */
     color: #fff;
     background: linear-gradient(45deg, #ff33cc, #ff66ff, #ff99ff);
     background-size: 200% 200%;
     animation: gradientHover 2s ease infinite;
     text-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
     cursor: pointer;
+    line-height: 1.2em; /* Maintains consistent spacing */
+    display: inline-block; /* Ensures scaling does not affect surrounding elements */
 }
+
 /* Animate Background */
 @keyframes gradientMove {
     0% { background-position: 0% 50%; }
