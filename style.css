@@ -9,12 +9,12 @@ body {
 /* Heading styles */
 h1 {
     color: #333;
-    font-size: 20px;
+    font-size: 24px;
 }
 
 /* Status message styling */
 #status {
-    font-size: 24px;
+    font-size: 32px;
     font-weight: bold;
     margin-top: 20px;
     display: inline-block;
@@ -24,10 +24,10 @@ h1 {
 
 /* 🎨 Cool hover effect */
 #status:hover {
-    transform: scale(1.1); /* Slightly enlarge the text */
-    color: #ff5733; /* Change text color to a fun orange-red */
+    transform: scale(1.5); /* Slightly enlarge the text */
+    color: #dc33ff; /* Change text color to a fun purple */
     text-shadow: 2px 2px 10px rgba(255, 87, 51, 0.7); /* Add a glowing effect */
-    cursor: pointer;
+    ;
 }
 
 /* RTL Fix for Hebrew */
