@@ -25,8 +25,8 @@ h1 {
 /* 🎨 Cool hover effect */
 #status:hover {
     transform: scale(1.5); /* Slightly enlarge the text */
-    color: #dc33ff; /* Change text color to a fun purple */
-    text-shadow: 2px 2px 10px rgba(255, 87, 51, 0.7); /* Add a glowing effect */
+    color: #dc33ff; /* Change text color to purple */
+    text-shadow: 2px 2px 10px rgba(234,135,255, 0.5); /* Add a glowing effect */
     ;
 }
 
