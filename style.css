@@ -3,17 +3,23 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     padding: 20px;
+<<<<<<< HEAD
     margin: 0; /* Ensures no unwanted spacing */
     height: 100vh; /* Prevents excess height */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+=======
+>>>>>>> parent of 356087b (Update style.css)
     background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
     background-size: 400% 400%;
     animation: gradientMove 8s ease infinite;
     color: white;
+<<<<<<< HEAD
     overflow: hidden; /* Hides any extra scrollbars */
+=======
+>>>>>>> parent of 356087b (Update style.css)
 }
 
 
