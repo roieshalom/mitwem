@@ -3,13 +3,17 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     padding: 20px;
-    background-color: #f5f5f5;
+    background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
+    background-size: 400% 400%;
+    animation: gradientMove 8s ease infinite;
+    color: white;
 }
 
 /* Heading styles */
 h1 {
-    color: #333;
-    font-size: 24px;
+    color: white;
+    font-size: 28px;
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
 }
 
 /* Status message styling */
@@ -18,16 +22,35 @@ h1 {
     font-weight: bold;
     margin-top: 20px;
     display: inline-block;
-    color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
     transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
 }
 
-/* 🎨 Cool hover effect */
+/* ✨ Super Fun Hover Effect */
 #status:hover {
-    transform: scale(1.5); /* Slightly enlarge the text */
-    color: #dc33ff; /* Change text color to purple */
-    text-shadow: 2px 2px 10px rgba(234,135,255, 0.5); /* Add a glowing effect */
-    ;
+    transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
+    color: #fff;
+    background: linear-gradient(45deg, #ff33cc, #ff66ff, #ff99ff);
+    background-size: 200% 200%;
+    animation: gradientHover 2s ease infinite;
+    text-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
+    cursor: pointer;
+}
+
+/* Animate Background */
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Animate Hover Effect */
+@keyframes gradientHover {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* RTL Fix for Hebrew */
@@ -43,7 +66,7 @@ h1 {
     }
     
     #status {
-        font-size: 20px;
+        font-size: 24px;
         padding: 15px;
     }
 }
