@@ -40,7 +40,7 @@ h1 {
     transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
 }
 
-/* ✨ Super Fun Hover Effect */
+/* 🎨 Super Fun Hover Effect */
 #status:hover {
     transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
     color: #fff;
@@ -49,8 +49,8 @@ h1 {
     animation: gradientHover 2s ease infinite;
     text-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
     cursor: pointer;
+    content: "🧔🏻‍♂️ with dad!"; /* This does NOT work in CSS alone */
 }
-
 /* Animate Background */
 @keyframes gradientMove {
     0% { background-position: 0% 50%; }
