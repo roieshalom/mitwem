@@ -22,10 +22,18 @@ body {
 h1 {
     color: white;
     font-size: 28px;
+<<<<<<< HEAD
     text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.8);
     white-space: nowrap; /* Prevents shrinking & keeps text in one line */
     overflow: visible; /* Ensures text can extend outside the box */
     max-width: 100%; /* Allows full-width display */
+=======
+    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.35);
+    word-wrap: break-word; /* Ensures text wraps instead of shrinking */
+    overflow-wrap: break-word;
+    white-space: normal; /* Allows multi-line text */
+    max-width: 90%; /* Prevents stretching too wide on big screens */
+>>>>>>> parent of f2eee29 (Update style.css)
 }
 
 
