@@ -3,8 +3,8 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     padding: 20px;
-    margin: 0; /* Ensures no extra spacing at the edges */
-    min-height: 100vh; /* Makes sure background covers full screen */
+    margin: 0; /* Ensures no unwanted spacing */
+    height: 100vh; /* Prevents excess height */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -13,8 +13,9 @@ body {
     background-size: 400% 400%;
     animation: gradientMove 8s ease infinite;
     color: white;
-    overflow-x: hidden; /* Prevents unwanted horizontal scrolling */
+    overflow: hidden; /* Hides any extra scrollbars */
 }
+
 
 /* Heading styles */
 /* Heading styles */
