@@ -88,8 +88,20 @@ function translateEvent(eventTitle, lang) {
     }
 }
 
-// Get the primary language from the document (default to English)
-const primaryLang = document.documentElement.lang || 'en';
+// Function to detect the browser language and set the primary language
+function detectBrowserLanguage() {
+    const lang = navigator.language || navigator.userLanguage;
+    if (lang.startsWith('de')) {
+        return 'de';
+    } else if (lang.startsWith('he')) {
+        return 'he';
+    } else {
+        return 'en';
+    }
+}
+
+// Get the primary language from the browser settings
+const primaryLang = detectBrowserLanguage();
 
 // Set the page title and heading based on the selected language
 document.getElementById("page-title").textContent = translations[primaryLang].title;
