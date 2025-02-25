@@ -8,7 +8,7 @@ body {
     min-height: 100vh; /* Makes sure background covers full screen */
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start; /* Moves content to the top */
     align-items: center;
     background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
     background-size: 400% 400%;
