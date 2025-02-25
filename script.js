@@ -62,14 +62,28 @@ function fetchEventsForDate(date, elementId) {
                 const translatedTitle = translateEvent(eventTitle, primaryLang);
                 document.getElementById(elementId).textContent = translatedTitle;
             } else {
-                document.getElementById(elementId).textContent = translations[lang].no_info;
+                document.getElementById(elementId).textContent = translations[primaryLang].no_info;
             }
         })
         .catch(error => {
-            document.getElementById(elementId).textContent = translations[lang].error;
+            document.getElementById(elementId).textContent = translations[primaryLang].error;
             console.error("Error fetching calendar data:", error);
         });
 }
+
+// Function to translate event titles based on the selected language
+function translateEvent(eventTitle, lang) {
+    // Add your translation logic here if needed
+    return eventTitle;
+}
+
+// Get the primary language from the document (default to English)
+const primaryLang = document.documentElement.lang || 'en';
+
+// Set the page title and heading based on the selected language
+document.getElementById("page-title").textContent = translations[primaryLang].title;
+document.getElementById("page-heading").textContent = translations[primaryLang].heading;
+document.getElementById("status").textContent = translations[primaryLang].checking;
 
 // Get the upcoming weekend dates
 const { friday, saturday, sunday } = getUpcomingWeekendDates();
@@ -81,3 +95,7 @@ document.getElementById("weekend-dates").textContent = `(${formatDate(friday)}, 
 fetchEventsForDate(friday, "friday-status");
 fetchEventsForDate(saturday, "saturday-status");
 fetchEventsForDate(sunday, "sunday-status");
+
+// Fetch data for today
+const today = new Date();
+fetchEventsForDate(today, "status");
