@@ -1,3 +1,26 @@
+const translations = {
+    'en': {
+        title: 'Who Are the Girls With?',
+        heading: 'Who Are the Girls With Today?',
+        checking: 'Checking...',
+        no_info: 'No info available today.',
+        error: 'Error loading data.'
+    },
+    'de': {
+        title: 'Mit wem sind Gali und Daniella?',
+        heading: 'Mit wem sind Gali und Daniella heute zusammen?',
+        checking: 'Überprüfung...',
+        no_info: 'Keine Informationen für heute verfügbar.',
+        error: 'Fehler beim Laden der Daten.'
+    },
+    'he': {
+        title: 'עם מי גלי ודניאלה היום?',
+        heading: 'עם מי גלי ודניאלה היום?',
+        checking: 'בודק...',
+        no_info: 'אין מידע זמין להיום.',
+        error: 'שגיאה בטעינת הנתונים.'
+    }
+};
 
 const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
 const API_KEY = "AIzaSyC5Yn2gNLdoCIWctrsnPli-UBfUZ0qdsMY";
