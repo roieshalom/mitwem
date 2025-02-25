@@ -1,3 +1,7 @@
+
+const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
+const API_KEY = "AIzaSyC5Yn2gNLdoCIWctrsnPli-UBfUZ0qdsMY";
+
 // Function to get the upcoming weekend dates (Friday, Saturday, Sunday)
 function getUpcomingWeekendDates() {
     const today = new Date();
