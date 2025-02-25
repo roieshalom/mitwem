@@ -6,7 +6,8 @@ const translations = {
         no_info: 'No info available today.',
         error: 'Error loading data.',
         with_dad: 'With Dad',
-        with_mom: 'With Mom'
+        with_mom: 'With Mom',
+        this_weekend: 'This Weekend'
     },
     'de': {
         title: 'Mit wem sind Gali und Daniella?',
@@ -15,7 +16,8 @@ const translations = {
         no_info: 'Keine Informationen für heute verfügbar.',
         error: 'Fehler beim Laden der Daten.',
         with_dad: 'Mit Papa',
-        with_mom: 'Mit Mama'
+        with_mom: 'Mit Mama',
+        this_weekend: 'Dieses Wochenende'
     },
     'he': {
         title: 'עם מי גלי ודניאלה היום?',
@@ -24,7 +26,8 @@ const translations = {
         no_info: 'אין מידע זמין להיום.',
         error: 'שגיאה בטעינת הנתונים.',
         with_dad: 'עם אבא',
-        with_mom: 'עם אמא'
+        with_mom: 'עם אמא',
+        this_weekend: 'סוף השבוע הזה'
     }
 };
 
@@ -113,6 +116,7 @@ const { friday, saturday, sunday } = getUpcomingWeekendDates();
 
 // Update the weekend dates display
 document.getElementById("weekend-dates").textContent = `(${formatDate(friday)}, ${formatDate(saturday)}, ${formatDate(sunday)})`;
+document.getElementById("weekend-heading").textContent = `${translations[primaryLang].this_weekend} (${formatDate(friday)}, ${formatDate(saturday)}, ${formatDate(sunday)})`;
 
 // Fetch data for the weekend
 fetchEventsForDate(friday, "friday-status");
