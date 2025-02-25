@@ -27,7 +27,7 @@ const translations = {
         error: 'שגיאה בטעינת הנתונים.',
         with_dad: 'עם אבא',
         with_mom: 'עם אמא',
-        this_weekend: 'סוף השבוע הזה'
+        this_weekend: 'סוף השבוע הקרוב'
     }
 };
 
@@ -111,12 +111,16 @@ document.getElementById("page-title").textContent = translations[primaryLang].ti
 document.getElementById("page-heading").textContent = translations[primaryLang].heading;
 document.getElementById("status").textContent = translations[primaryLang].checking;
 
+// Apply RTL class for Hebrew
+if (primaryLang === 'he') {
+    document.body.classList.add('rtl');
+}
+
 // Get the upcoming weekend dates
 const { friday, saturday, sunday } = getUpcomingWeekendDates();
 
-// Update the weekend dates display
-document.getElementById("weekend-dates").textContent = `(${formatDate(friday)}, ${formatDate(saturday)}, ${formatDate(sunday)})`;
-document.getElementById("weekend-heading").textContent = `${translations[primaryLang].this_weekend} (${formatDate(friday)}, ${formatDate(saturday)}, ${formatDate(sunday)})`;
+// Update the weekend heading display
+document.getElementById("weekend-heading").textContent = `${translations[primaryLang].this_weekend}`;
 
 // Fetch data for the weekend
 fetchEventsForDate(friday, "friday-status");
