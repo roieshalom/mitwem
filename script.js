@@ -4,21 +4,27 @@ const translations = {
         heading: 'Who Are the Girls With Today?',
         checking: 'Checking...',
         no_info: 'No info available today.',
-        error: 'Error loading data.'
+        error: 'Error loading data.',
+        with_dad: 'With Dad',
+        with_mom: 'With Mom'
     },
     'de': {
         title: 'Mit wem sind Gali und Daniella?',
         heading: 'Mit wem sind Gali und Daniella heute zusammen?',
         checking: 'Überprüfung...',
         no_info: 'Keine Informationen für heute verfügbar.',
-        error: 'Fehler beim Laden der Daten.'
+        error: 'Fehler beim Laden der Daten.',
+        with_dad: 'Mit Papa',
+        with_mom: 'Mit Mama'
     },
     'he': {
         title: 'עם מי גלי ודניאלה היום?',
         heading: 'עם מי גלי ודניאלה היום?',
         checking: 'בודק...',
         no_info: 'אין מידע זמין להיום.',
-        error: 'שגיאה בטעינת הנתונים.'
+        error: 'שגיאה בטעינת הנתונים.',
+        with_dad: 'עם אבא',
+        with_mom: 'עם אמא'
     }
 };
 
@@ -73,8 +79,13 @@ function fetchEventsForDate(date, elementId) {
 
 // Function to translate event titles based on the selected language
 function translateEvent(eventTitle, lang) {
-    // Add your translation logic here if needed
-    return eventTitle;
+    if (eventTitle === 'Roie') {
+        return translations[lang].with_dad;
+    } else if (eventTitle === 'Anat') {
+        return translations[lang].with_mom;
+    } else {
+        return eventTitle;
+    }
 }
 
 // Get the primary language from the document (default to English)
