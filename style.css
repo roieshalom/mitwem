@@ -23,7 +23,8 @@ body.rtl {
 
 /* Content wrapper to align text to the top */
 .content {
-    padding-top: 100px; /* Padding from top to align content */
+    padding-top: 10%; /* Padding from top to align content */
+    padding-bottom: 10%; /* Padding from bottom to avoid overlap with footer */
     flex-grow: 1; /* Allow content to grow and take available space */
     display: flex;
     flex-direction: column;
@@ -42,7 +43,7 @@ h1 {
 #status {
     font-size: 32px;
     font-weight: bold;
-    margin: 10px 0; /* Margin to create a gap between elements */
+    margin: 2% 0; /* Margin to create a gap between elements */
     display: inline-block;
     color: white;
     padding: 10px 20px;
@@ -54,7 +55,7 @@ h1 {
 #weekend-status {
     font-size: 24px;
     font-weight: normal; /* Change to regular text */
-    margin: 10px 0; /* Margin to create a gap between elements */
+    margin: 2% 0; /* Margin to create a gap between elements */
     display: inline-block;
     color: white;
     padding: 0; /* Remove padding to minimize space */
@@ -64,7 +65,7 @@ h1 {
 #footer {
     font-size: 18px;
     color: white;
-    padding: 100px 0; /* 100px padding */
+    padding: 10%; /* 10% padding relative to the viewport height */
     width: 100%;
     text-align: center;
     opacity: 0.7; /* 70% opacity */
@@ -123,15 +124,14 @@ h1 {
 
     #footer {
         font-size: 16px;
-        padding: 20px 0; /* Reduce padding on mobile */
+        padding: 10%; /* Ensure padding is responsive on mobile */
         background: none; /* Ensure background is removed on mobile */
         position: static; /* Ensure footer does not overlap content */
-        margin-top: auto; /* Push footer to the bottom */
     }
 
     .content {
-        padding-top: 50px; /* Adjust padding for mobile */
-        padding-bottom: 50px; /* Adjust padding for mobile to avoid overlap with footer */
+        padding-top: 10%; /* Adjust padding for mobile */
+        padding-bottom: 10%; /* Adjust padding for mobile to avoid overlap with footer */
     }
 
     body {
@@ -146,11 +146,11 @@ h1 {
         bottom: 0;
         left: 0;
         right: 0;
-        padding: 20px 0; /* Reduce padding to ensure it fits in the viewport */
+        padding: 5%; /* Reduce padding to ensure it fits in the viewport */
         margin-top: 0;
     }
 
     .content {
-        padding-bottom: 70px; /* Ensure space for the fixed footer */
+        padding-bottom: 15%; /* Ensure space for the fixed footer */
     }
 }
