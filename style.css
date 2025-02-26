@@ -38,10 +38,11 @@ h1 {
 /* Weekend status styling */
 #weekend-status {
     font-size: 24px;
-    margin-top: 0px; /* Remove gap */
+    font-weight: normal; /* Change to regular text */
+    margin-top: 0; /* Remove gap */
     display: inline-block;
     color: white;
-    padding: 5px 15px;
+    padding: 0; /* Remove padding to minimize space */
     border-radius: 8px;
 }
 
@@ -89,6 +90,6 @@ h1 {
 
     #weekend-status {
         font-size: 20px;
-        padding: 10px;
+        padding: 0; /* Ensure no padding on mobile as well */
     }
 }
