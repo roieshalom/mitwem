@@ -7,8 +7,7 @@ const translations = {
         error: 'Error loading data.',
         with_dad: 'With Dad',
         with_mom: 'With Mom',
-        this_weekend: 'This Weekend',
-        various: 'Various'
+        this_weekend: 'This Weekend'
     },
     'de': {
         title: 'Mit wem sind Gali und Daniella?',
@@ -18,8 +17,7 @@ const translations = {
         error: 'Fehler beim Laden der Daten.',
         with_dad: 'Mit Papa',
         with_mom: 'Mit Mama',
-        this_weekend: 'Dieses Wochenende',
-        various: 'Verschiedene'
+        this_weekend: 'Dieses Wochenende'
     },
     'he': {
         title: 'עם מי גלי ודניאלה היום?',
@@ -29,8 +27,7 @@ const translations = {
         error: 'שגיאה בטעינת הנתונים.',
         with_dad: 'עם אבא',
         with_mom: 'עם אמא',
-        this_weekend: 'סוף השבוע הקרוב',
-        various: 'שונות'
+        this_weekend: 'סוף השבוע הזה'
     }
 };
 
@@ -61,11 +58,10 @@ function formatDate(date) {
 }
 
 // Function to fetch calendar events for a specific date
-function fetchEventsForDate(date) {
+function fetchEventsForDate(date, elementId) {
     const isoDate = date.toISOString().split("T")[0];
     const timeMin = `${isoDate}T00:00:00-00:00`;
     const timeMax = `${isoDate}T23:59:59-00:00`;
-
     const statusElement = document.getElementById("status");
 
     if (!statusElement) {
@@ -74,18 +70,20 @@ function fetchEventsForDate(date) {
     }
 
     return fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
+
         .then(response => response.json())
         .then(data => {
             if (data.items && data.items.length > 0) {
-                return data.items[0].summary;
+                const eventTitle = data.items[0].summary;
+                const translatedTitle = translateEvent(eventTitle, primaryLang);
+                document.getElementById(elementId).textContent = translatedTitle;
             } else {
-                return null;
+                document.getElementById(elementId).textContent = translations[primaryLang].no_info;
             }
         })
         .catch(error => {
+            document.getElementById(elementId).textContent = translations[primaryLang].error;
             console.error("Error fetching calendar data:", error);
-            statusElement.textContent = translations[primaryLang].error;
-            return null;
         });
 }
 
@@ -114,7 +112,6 @@ function detectBrowserLanguage() {
 
 // Get the primary language from the browser settings
 const primaryLang = detectBrowserLanguage();
-
 // Set the page title, heading, and status based on the selected language
 const pageTitleElement = document.getElementById("page-title");
 const pageHeadingElement = document.getElementById("page-heading");
@@ -130,13 +127,13 @@ pageTitleElement.textContent = translations[primaryLang].title;
 pageHeadingElement.textContent = translations[primaryLang].heading;
 statusElement.textContent = translations[primaryLang].checking;
 
-// Apply RTL class for Hebrew
-if (primaryLang === 'he') {
-    document.body.classList.add('rtl');
-}
 
 // Get the upcoming weekend dates
 const { friday, saturday, sunday } = getUpcomingWeekendDates();
+
+// Update the weekend dates display
+document.getElementById("weekend-dates").textContent = `(${formatDate(friday)}, ${formatDate(saturday)}, ${formatDate(sunday)})`;
+document.getElementById("weekend-heading").textContent = `${translations[primaryLang].this_weekend} (${formatDate(friday)}, ${formatDate(saturday)}, ${formatDate(sunday)})`;
 
 // Fetch data for the weekend
 Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)]).then(results => {
@@ -157,4 +154,11 @@ const today = new Date();
 fetchEventsForDate(today).then(eventTitle => {
     const translatedTitle = translateEvent(eventTitle, primaryLang);
     statusElement.textContent = translatedTitle || translations[primaryLang].no_info;
-});
+});=======
+fetchEventsForDate(friday, "friday-status");
+fetchEventsForDate(saturday, "saturday-status");
+fetchEventsForDate(sunday, "sunday-status");
+
+// Fetch data for today
+const today = new Date();
+fetchEventsForDate(today, "status");
