@@ -65,7 +65,7 @@ h1 {
 footer#footer {
     font-size: 18px;
     color: white;
-    padding: 10vh 0; /* 10vh padding relative to the viewport height */
+    padding: 20vh 0; /* 20vh padding relative to the viewport height */
     width: 100%;
     text-align: center;
     opacity: 0.7; /* 70% opacity */
@@ -124,7 +124,7 @@ footer#footer {
 
     footer#footer {
         font-size: 16px;
-        padding: 10vh 0; /* Ensure padding is responsive on mobile */
+        padding: 20vh 0; /* Ensure padding is responsive on mobile */
         background: none; /* Ensure background is removed on mobile */
         position: static; /* Ensure footer does not overlap content */
     }
@@ -146,11 +146,11 @@ footer#footer {
         bottom: 0;
         left: 0;
         right: 0;
-        padding: 5vh 0; /* Reduce padding to ensure it fits in the viewport */
+        padding: 10vh 0; /* Reduce padding to ensure it fits in the viewport */
         margin-top: 0;
     }
 
     .content {
-        padding-bottom: 25vh; /* Ensure space for the fixed footer */
+        padding-bottom: 30vh; /* Ensure space for the fixed footer */
     }
 }
