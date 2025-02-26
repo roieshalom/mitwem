@@ -66,6 +66,13 @@ function fetchEventsForDate(date) {
     const timeMin = `${isoDate}T00:00:00Z`;
     const timeMax = `${isoDate}T23:59:59Z`;
 
+    const statusElement = document.getElementById("status");
+
+    if (!statusElement) {
+        console.error("Required HTML element 'status' is missing");
+        return;
+    }
+
     return fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
         .then(response => response.json())
         .then(data => {
@@ -77,6 +84,7 @@ function fetchEventsForDate(date) {
         })
         .catch(error => {
             console.error("Error fetching calendar data:", error);
+            statusElement.textContent = translations[primaryLang].error;
             return null;
         });
 }
@@ -108,9 +116,19 @@ function detectBrowserLanguage() {
 const primaryLang = detectBrowserLanguage();
 
 // Set the page title, heading, and status based on the selected language
-document.getElementById("page-title").textContent = translations[primaryLang].title;
-document.getElementById("page-heading").textContent = translations[primaryLang].heading;
-document.getElementById("status").textContent = translations[primaryLang].checking;
+const pageTitleElement = document.getElementById("page-title");
+const pageHeadingElement = document.getElementById("page-heading");
+const statusElement = document.getElementById("status");
+const weekendStatusElement = document.getElementById("weekend-status");
+
+if (!pageTitleElement || !pageHeadingElement || !statusElement || !weekendStatusElement) {
+    console.error("Required HTML elements are missing");
+    return;
+}
+
+pageTitleElement.textContent = translations[primaryLang].title;
+pageHeadingElement.textContent = translations[primaryLang].heading;
+statusElement.textContent = translations[primaryLang].checking;
 
 // Apply RTL class for Hebrew
 if (primaryLang === 'he') {
@@ -128,9 +146,9 @@ Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEven
     const translatedSundayEvent = translateEvent(sundayEvent, primaryLang);
 
     if (translatedFridayEvent === translatedSaturdayEvent && translatedSaturdayEvent === translatedSundayEvent) {
-        document.getElementById("weekend-status").textContent = `${translations[primaryLang].this_weekend}: ${translatedFridayEvent}`;
+        weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${translatedFridayEvent}`;
     } else {
-        document.getElementById("weekend-status").textContent = `${translations[primaryLang].this_weekend}: ${translations[primaryLang].various}`;
+        weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${translations[primaryLang].various}`;
     }
 });
 
@@ -138,5 +156,5 @@ Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEven
 const today = new Date();
 fetchEventsForDate(today).then(eventTitle => {
     const translatedTitle = translateEvent(eventTitle, primaryLang);
-    document.getElementById("status").textContent = translatedTitle || translations[primaryLang].no_info;
+    statusElement.textContent = translatedTitle || translations[primaryLang].no_info;
 });
