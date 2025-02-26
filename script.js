@@ -62,8 +62,15 @@ function fetchEventsForDate(date, elementId) {
     const isoDate = date.toISOString().split("T")[0];
     const timeMin = `${isoDate}T00:00:00-00:00`;
     const timeMax = `${isoDate}T23:59:59-00:00`;
+    const statusElement = document.getElementById("status");
 
-    fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
+    if (!statusElement) {
+        console.error("Required HTML element 'status' is missing");
+        return;
+    }
+
+    return fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
+
         .then(response => response.json())
         .then(data => {
             if (data.items && data.items.length > 0) {
@@ -105,11 +112,21 @@ function detectBrowserLanguage() {
 
 // Get the primary language from the browser settings
 const primaryLang = detectBrowserLanguage();
+// Set the page title, heading, and status based on the selected language
+const pageTitleElement = document.getElementById("page-title");
+const pageHeadingElement = document.getElementById("page-heading");
+const statusElement = document.getElementById("status");
+const weekendStatusElement = document.getElementById("weekend-status");
 
-// Set the page title and heading based on the selected language
-document.getElementById("page-title").textContent = translations[primaryLang].title;
-document.getElementById("page-heading").textContent = translations[primaryLang].heading;
-document.getElementById("status").textContent = translations[primaryLang].checking;
+if (!pageTitleElement || !pageHeadingElement || !statusElement || !weekendStatusElement) {
+    console.error("Required HTML elements are missing");
+    return;
+}
+
+pageTitleElement.textContent = translations[primaryLang].title;
+pageHeadingElement.textContent = translations[primaryLang].heading;
+statusElement.textContent = translations[primaryLang].checking;
+
 
 // Get the upcoming weekend dates
 const { friday, saturday, sunday } = getUpcomingWeekendDates();
@@ -119,6 +136,25 @@ document.getElementById("weekend-dates").textContent = `(${formatDate(friday)}, 
 document.getElementById("weekend-heading").textContent = `${translations[primaryLang].this_weekend} (${formatDate(friday)}, ${formatDate(saturday)}, ${formatDate(sunday)})`;
 
 // Fetch data for the weekend
+Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)]).then(results => {
+    const [fridayEvent, saturdayEvent, sundayEvent] = results;
+    const translatedFridayEvent = translateEvent(fridayEvent, primaryLang);
+    const translatedSaturdayEvent = translateEvent(saturdayEvent, primaryLang);
+    const translatedSundayEvent = translateEvent(sundayEvent, primaryLang);
+
+    if (translatedFridayEvent === translatedSaturdayEvent && translatedSaturdayEvent === translatedSundayEvent) {
+        weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${translatedFridayEvent}`;
+    } else {
+        weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${translations[primaryLang].various}`;
+    }
+});
+
+// Fetch data for today
+const today = new Date();
+fetchEventsForDate(today).then(eventTitle => {
+    const translatedTitle = translateEvent(eventTitle, primaryLang);
+    statusElement.textContent = translatedTitle || translations[primaryLang].no_info;
+});=======
 fetchEventsForDate(friday, "friday-status");
 fetchEventsForDate(saturday, "saturday-status");
 fetchEventsForDate(sunday, "sunday-status");
