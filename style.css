@@ -69,10 +69,10 @@ h1 {
     text-align: center;
     opacity: 0.7; /* 70% opacity */
     background: none; /* Remove background */
-    position: absolute;
-    bottom: 0; /* Align to bottom */
+    position: relative; /* Use relative positioning to avoid overlap */
     direction: ltr; /* Ensure footer text is always LTR */
     text-align: center; /* Ensure footer text is center aligned */
+    margin-top: auto; /* Push footer to the bottom */
 }
 
 /* ✨ Super Fun Hover Effect */
@@ -125,10 +125,10 @@ h1 {
         font-size: 16px;
         padding: 20px 0; /* Reduce padding on mobile */
         background: none; /* Ensure background is removed on mobile */
-        position: static; /* Ensure footer does not overlap content */
+        margin-top: 50px; /* Add margin to avoid overlap with content */
     }
 
     body {
-        padding-bottom: 50px; /* Add padding to body to accommodate footer */
+        padding-bottom: 0; /* Remove extra padding on body */
     }
 }
