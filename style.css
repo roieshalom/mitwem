@@ -50,6 +50,17 @@ h1 {
     padding: 0; /* Remove padding to minimize space */
 }
 
+/* Footer styling */
+#footer {
+    margin-top: auto; /* Push footer to the bottom */
+    font-size: 18px;
+    color: white;
+    padding: 10px 0;
+    background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent background */
+    width: 100%;
+    text-align: center;
+}
+
 /* ✨ Super Fun Hover Effect */
 #status:hover {
     transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
@@ -94,5 +105,9 @@ h1 {
 
     #weekend-status {
         font-size: 20px;
+    }
+
+    #footer {
+        font-size: 16px;
     }
 }
