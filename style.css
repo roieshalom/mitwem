@@ -22,7 +22,7 @@ body.rtl {
 
 /* Content wrapper to align text to the top */
 .content {
-    padding-top: 100px; /* Padding from top to align content */
+    padding: 100px; /* Padding from top to align content */
     flex-grow: 1; /* Allow content to grow and take available space */
     display: flex;
     flex-direction: column;
@@ -41,7 +41,7 @@ h1 {
 #status {
     font-size: 32px;
     font-weight: bold;
-    margin: 20px 0 0; /* Margin to create a gap above */
+    margin: 10px 0; /* Margin to create a gap between elements */
     display: inline-block;
     color: white;
     padding: 10px 20px;
@@ -53,7 +53,7 @@ h1 {
 #weekend-status {
     font-size: 24px;
     font-weight: normal; /* Change to regular text */
-    margin: 10px 0 0; /* Margin to create a gap above */
+    margin: 10px 0; /* Margin to create a gap between elements */
     display: inline-block;
     color: white;
     padding: 0; /* Remove padding to minimize space */
@@ -63,13 +63,15 @@ h1 {
 #footer {
     font-size: 18px;
     color: white;
-    padding: 10px 0;
+    padding: 100px 0; /* 100px padding */
     width: 100%;
     text-align: center;
     opacity: 0.7; /* 70% opacity */
     background: none; /* Remove background */
     position: absolute;
-    bottom: 100px; /* 100px gap from bottom */
+    bottom: 0; /* Align to bottom */
+    direction: ltr; /* Ensure footer text is always LTR */
+    text-align: center; /* Ensure footer text is center aligned */
 }
 
 /* ✨ Super Fun Hover Effect */
@@ -120,6 +122,7 @@ h1 {
 
     #footer {
         font-size: 16px;
+        padding: 100px 0; /* Ensure 100px padding on mobile */
         background: none; /* Ensure background is removed on mobile */
     }
 }
