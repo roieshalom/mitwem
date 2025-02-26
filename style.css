@@ -126,7 +126,7 @@ footer#footer {
         font-size: 16px;
         padding: 20vh 0; /* Ensure padding is responsive on mobile */
         background: none; /* Ensure background is removed on mobile */
-        position: fixed; /* Ensure footer is fixed at the bottom */
+        position: relative; /* Ensure footer scrolls with content */
         bottom: 0; /* Align to bottom */
         left: 0;
         right: 0;
@@ -134,7 +134,7 @@ footer#footer {
 
     .content {
         padding-top: 10vh; /* Adjust padding for mobile */
-        padding-bottom: 30vh; /* Ensure space for the fixed footer */
+        padding-bottom: 20vh; /* Ensure space for the footer */
     }
 
     body {
@@ -149,6 +149,6 @@ footer#footer {
     }
 
     .content {
-        padding-bottom: 30vh; /* Ensure space for the fixed footer */
+        padding-bottom: 40vh; /* Ensure space for the footer */
     }
 }
