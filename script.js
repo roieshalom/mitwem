@@ -124,6 +124,9 @@ pageTitleElement.textContent = translations[primaryLang].title;
 pageHeadingElement.textContent = translations[primaryLang].heading;
 statusElement.textContent = translations[primaryLang].checking;
 
+// Set the body class based on the language
+document.body.className = primaryLang === 'he' ? 'rtl' : 'ltr';
+
 // Get the upcoming weekend dates
 const { friday, saturday, sunday } = getUpcomingWeekendDates();
 
