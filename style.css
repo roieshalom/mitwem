@@ -33,6 +33,7 @@ h1 {
     padding: 10px 20px;
     border-radius: 12px;
     transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+    margin-bottom: 5px; /* Move the smaller line closer */
 }
 
 /* Feedback container styling */
