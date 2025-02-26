@@ -38,8 +38,7 @@ h1 {
 /* Weekend status styling */
 #weekend-status {
     font-size: 24px;
-    font-weight: bold;
-    margin-top: 5px;
+    margin-top: 0px; /* Remove gap */
     display: inline-block;
     color: white;
     padding: 5px 15px;
