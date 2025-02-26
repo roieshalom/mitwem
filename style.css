@@ -126,12 +126,15 @@ footer#footer {
         font-size: 16px;
         padding: 20vh 0; /* Ensure padding is responsive on mobile */
         background: none; /* Ensure background is removed on mobile */
-        position: static; /* Ensure footer does not overlap content */
+        position: fixed; /* Ensure footer is fixed at the bottom */
+        bottom: 0; /* Align to bottom */
+        left: 0;
+        right: 0;
     }
 
     .content {
         padding-top: 10vh; /* Adjust padding for mobile */
-        padding-bottom: 20vh; /* Adjust padding for mobile to avoid overlap with footer, double the top padding */
+        padding-bottom: 30vh; /* Ensure space for the fixed footer */
     }
 
     body {
@@ -142,12 +145,7 @@ footer#footer {
 /* Ensure footer is always inside the viewport on vertical mobile */
 @media (max-height: 600px) and (orientation: portrait) {
     footer#footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 10vh 0; /* Reduce padding to ensure it fits in the viewport */
-        margin-top: 0;
+        padding: 20vh 0; /* Ensure padding is consistent */
     }
 
     .content {
