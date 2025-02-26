@@ -20,12 +20,13 @@
         <h1 id="page-heading">Who Are the Girls With Today?</h1>
         <p id="status">With Mom</p>
         <p id="weekend-status">This Weekend: With Dad</p>
-        <button id="feedback-button">Give Feedback</button> <!-- Feedback button -->
     </div>
-    <footer id="footer">©2025 Made by Papa ❤️</footer> <!-- Added footer -->
+    <footer id="footer">
+        ©2025 Made by Papa ❤️ <a id="feedback-link" href="javascript:void(0);">Give Feedback</a> <!-- Feedback link -->
+    </footer>
     <script src="script.js"></script>
     <script>
-        document.getElementById('feedback-button').addEventListener('click', function() {
+        document.getElementById('feedback-link').addEventListener('click', function() {
             window.open('YOUR_GOOGLE_FORM_LINK', '_blank');
         });
     </script>
