@@ -3,25 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Who Are the Girls With?</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Feedback</title>
 </head>
 <body>
-    <h1 id="page-heading">Mit wem sind Gali und Daniella heute zusammen?</h1>
-    <p id="status">Checking...</p>
-    <!-- 📅 New Weekend Section -->
-    <div id="weekend-container">
-        <p id="weekend-status">Loading...</p>
-    </div>
-    
-    <!-- Feedback Form Section -->
-    <div id="feedback-container">
-        <h2>Feedback</h2>
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScux8wav6rp4kUP6QpvtYCDz8jV_7pEoSGZfpr1gM5EqaxF8A/viewform?embedded=true" 
-            width="640" height="645" frameborder="0" marginheight="0" marginwidth="0">Loading…
-        </iframe>
-    </div>
-    
-    <script src="script.js"></script>
+    <h1>Feedback</h1>
+    <p>Submit your feedback and vote on feature requests:</p>
+    <div id="canny-widget"></div>
+    <script>
+        (function() {
+            var script = document.createElement('script');
+            script.src = "https://canny.io/sdk.js";
+            script.async = true;
+            script.onload = function() {
+                Canny('initChangelog', {
+                    appID: 'your-canny-app-id',
+                    boardToken: 'your-board-token',
+                    basePath: '/feedback',
+                });
+            };
+            document.getElementById('canny-widget').appendChild(script);
+        })();
+    </script>
 </body>
 </html>
