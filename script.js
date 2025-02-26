@@ -63,8 +63,8 @@ function formatDate(date) {
 // Function to fetch calendar events for a specific date
 function fetchEventsForDate(date) {
     const isoDate = date.toISOString().split("T")[0];
-    const timeMin = `${isoDate}T00:00:00-00:00`;
-    const timeMax = `${isoDate}T23:59:59-00:00`;
+    const timeMin = `${isoDate}T00:00:00Z`;
+    const timeMax = `${isoDate}T23:59:59Z`;
 
     return fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
         .then(response => response.json())
