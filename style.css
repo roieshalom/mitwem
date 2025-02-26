@@ -2,19 +2,18 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    padding: 20px;
     margin: 0; /* Ensures no extra spacing at the edges */
-    padding-top: 300px; /* Adjust this for the gap from the top */
-    min-height: 100vh; /* Makes sure background covers full screen */
+    padding: 200px 20px 100px 20px; /* 200px padding above content, 100px padding below */
+    min-height: 100vh; /* Ensures background covers full screen */
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Moves content to the top */
+    justify-content: space-between; /* Space between header/content/footer */
     align-items: center;
     background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
     background-size: 400% 400%;
     animation: gradientMove 8s ease infinite;
     color: white;
-    overflow-x: hidden; /* Prevents unwanted horizontal scrolling */
+    overflow: hidden; /* Prevents any scrolling */
 }
 
 body.rtl {
@@ -31,8 +30,7 @@ h1 {
 #status {
     font-size: 32px;
     font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 0; /* Remove bottom margin */
+    margin: 0; /* Remove any default margin */
     display: inline-block;
     color: white;
     padding: 10px 20px;
@@ -44,7 +42,7 @@ h1 {
 #weekend-status {
     font-size: 24px;
     font-weight: normal; /* Change to regular text */
-    margin-top: 0; /* Remove top margin */
+    margin: 0; /* Remove any default margin */
     display: inline-block;
     color: white;
     padding: 0; /* Remove padding to minimize space */
@@ -52,11 +50,9 @@ h1 {
 
 /* Footer styling */
 #footer {
-    margin-top: auto; /* Push footer to the bottom */
     font-size: 18px;
     color: white;
     padding: 10px 0;
-    background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent background */
     width: 100%;
     text-align: center;
     opacity: 0.7; /* 70% opacity */
