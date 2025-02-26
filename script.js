@@ -50,28 +50,28 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Send email using EmailJS
-    function sendEmail(feedback) {
-        emailjs.send("service_5xcb59c", "template_g9mg4k5", {
-            message: feedback
-        })
-        .then(function(response) {
-            console.log('SUCCESS!', response.status, response.text);
-            // Show confirmation message
-            confirmationMessage.style.display = 'block';
+   function sendEmail(feedback) {
+    emailjs.send("service_5xcb59c", "template_g9mg4k5", { 
+        message: feedback 
+    }).then(
+        function(response) {
+            console.log("SUCCESS!", response.status, response.text);
+            confirmationMessage.style.display = "block";
 
-            // Reset form
-            feedbackText.value = '';
+            feedbackText.value = "";
             sendBtn.disabled = true;
 
-            // Hide confirmation message after 3 seconds
             setTimeout(function () {
-                confirmationMessage.style.display = 'none';
-                feedbackOverlay.style.display = 'none';
+                confirmationMessage.style.display = "none";
+                feedbackOverlay.style.display = "none";
             }, 3000);
-        }, function(error) {
-            console.log('FAILED...', error);
-        });
-    }
+        },
+        function(error) {
+            console.error("FAILED...", error.text);
+        }
+    );
+}
+
 
     // Additional translation for feedback link
     if (userLang.startsWith('de')) {
