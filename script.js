@@ -45,9 +45,17 @@ document.addEventListener('DOMContentLoaded', function () {
     sendBtn.addEventListener('click', function () {
         const feedback = feedbackText.value.trim();
         if (feedback) {
-            // Simulate sending email
             sendEmail(feedback);
+        }
+    });
 
+    // Send email using EmailJS
+    function sendEmail(feedback) {
+        emailjs.send("service_5xcb59c", "template_g9mg4k5", {
+            message: feedback
+        })
+        .then(function(response) {
+            console.log('SUCCESS!', response.status, response.text);
             // Show confirmation message
             confirmationMessage.style.display = 'block';
 
@@ -60,15 +68,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmationMessage.style.display = 'none';
                 feedbackOverlay.style.display = 'none';
             }, 3000);
-        }
-    });
-
-    // Simulate sending email
-    function sendEmail(feedback) {
-        const email = 'Roiesh@gmail.com';
-        const subject = 'Feedback and Requests';
-        const body = encodeURIComponent(feedback);
-        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }, function(error) {
+            console.log('FAILED...', error);
+        });
     }
 
     // Additional translation for feedback link
