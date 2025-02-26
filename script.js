@@ -129,23 +129,12 @@ statusElement.textContent = translations[primaryLang].checking;
 // Get the upcoming weekend dates
 const { friday, saturday, sunday } = getUpcomingWeekendDates();
 
-// Update the weekend dates display
-document.getElementById("weekend-dates").textContent = `(${formatDate(friday)}, ${formatDate(saturday)}, ${formatDate(sunday)})`;
-document.getElementById("weekend-heading").textContent = `${translations[primaryLang].this_weekend} (${formatDate(friday)}, ${formatDate(saturday)}, ${formatDate(sunday)})`;
-
 // Fetch data for the weekend
-Promise.all([fetchEventsForDate(friday, "friday-status"), fetchEventsForDate(saturday, "saturday-status"), fetchEventsForDate(sunday, "sunday-status")])
+Promise.all([fetchEventsForDate(friday, ""), fetchEventsForDate(saturday, ""), fetchEventsForDate(sunday, "")])
     .then(results => {
         const [fridayEvent, saturdayEvent, sundayEvent] = results;
-        const translatedFridayEvent = translateEvent(fridayEvent, primaryLang);
-        const translatedSaturdayEvent = translateEvent(saturdayEvent, primaryLang);
-        const translatedSundayEvent = translateEvent(sundayEvent, primaryLang);
-
-        if (translatedFridayEvent === translatedSaturdayEvent && translatedSaturdayEvent === translatedSundayEvent) {
-            weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${translatedFridayEvent}`;
-        } else {
-            weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${translations[primaryLang].various}`;
-        }
+        const weekendStatus = (fridayEvent === saturdayEvent && saturdayEvent === sundayEvent) ? fridayEvent : translations[primaryLang].various;
+        weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${weekendStatus}`;
     });
 
 // Fetch data for today
