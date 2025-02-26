@@ -3,11 +3,11 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 0; /* Ensures no extra spacing at the edges */
-    padding: 200px 20px 100px 20px; /* 200px padding above content, 100px padding below */
+    padding: 0; /* Remove padding to align text to the top */
     min-height: 100vh; /* Ensures background covers full screen */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Space between header/content/footer */
+    justify-content: space-between; /* Space between content and footer */
     align-items: center;
     background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
     background-size: 400% 400%;
@@ -18,6 +18,16 @@ body {
 
 body.rtl {
     direction: rtl; /* Set direction to RTL for Hebrew */
+}
+
+/* Content wrapper to align text to the top */
+.content {
+    padding-top: 200px; /* Padding from top to align content */
+    flex-grow: 1; /* Allow content to grow and take available space */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align content to the top */
+    align-items: center;
 }
 
 /* Heading styles */
