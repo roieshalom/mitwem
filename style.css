@@ -22,7 +22,7 @@ body.rtl {
 
 /* Content wrapper to align text to the top */
 .content {
-    padding-top: 200px; /* Padding from top to align content */
+    padding-top: 100px; /* Padding from top to align content */
     flex-grow: 1; /* Allow content to grow and take available space */
     display: flex;
     flex-direction: column;
@@ -68,6 +68,8 @@ h1 {
     text-align: center;
     opacity: 0.7; /* 70% opacity */
     background: none; /* Remove background */
+    position: absolute;
+    bottom: 100px; /* 100px gap from bottom */
 }
 
 /* ✨ Super Fun Hover Effect */
