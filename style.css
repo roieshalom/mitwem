@@ -4,7 +4,7 @@ body {
     text-align: center;
     padding: 20px;
     margin: 0; /* Ensures no extra spacing at the edges */
-    padding-top: 50px; /* Adjust this for the gap from the top */
+    padding-top: 300px; /* Adjust this for the gap from the top */
     min-height: 100vh; /* Makes sure background covers full screen */
     display: flex;
     flex-direction: column;
