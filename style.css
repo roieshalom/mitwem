@@ -55,7 +55,7 @@ h1 {
 #weekend-status {
     font-size: 24px;
     font-weight: normal; /* Change to regular text */
-    margin: 2vh 0; /* Margin to create a gap between elements */
+    margin: -2vh 0; /* Updated margin to -2vh */
     display: inline-block;
     color: white;
     padding: 0; /* Remove padding to minimize space */
