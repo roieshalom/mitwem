@@ -65,12 +65,6 @@ function fetchEventsForDate(date, elementId) {
     const isoDate = date.toISOString().split("T")[0];
     const timeMin = `${isoDate}T00:00:00-00:00`;
     const timeMax = `${isoDate}T23:59:59-00:00`;
-    const statusElement = document.getElementById("status");
-
-    if (!statusElement) {
-        console.error("Required HTML element 'status' is missing");
-        return;
-    }
 
     return fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
         .then(response => response.json())
