@@ -1,224 +1,82 @@
-/* General page styles */
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0; /* Ensures no extra spacing at the edges */
-    padding: 0; /* Remove padding to align text to the top */
-    min-height: 100vh; /* Ensures background covers full screen */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Space between content and footer */
-    align-items: center;
-    background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
-    background-size: 400% 400%;
-    animation: gradientMove 8s ease infinite;
-    color: white;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    overflow-y: auto; /* Allow vertical scrolling for pull-down refresh */
-}
+document.addEventListener('DOMContentLoaded', function () {
+    // Existing translation code
+    const userLang = navigator.language || navigator.userLanguage;
+    const pageTitle = document.getElementById('page-title');
+    const pageHeading = document.getElementById('page-heading');
+    const status = document.getElementById('status');
+    const weekendStatus = document.getElementById('weekend-status');
 
-body.rtl {
-    direction: rtl; /* Set direction to RTL for Hebrew */
-}
-
-/* Content wrapper to align text to the top */
-.content {
-    padding-top: 10vh; /* Padding from top to align content */
-    padding-bottom: 20vh; /* Padding from bottom to avoid overlap with footer, double the top padding */
-    flex-grow: 1; /* Allow content to grow and take available space */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Align content to the top */
-    align-items: center;
-}
-
-/* Heading styles */
-h1 {
-    color: white;
-    font-size: 28px;
-    margin: 0; /* Remove any default margin */
-}
-
-/* Status message styling */
-#status {
-    font-size: 32px;
-    font-weight: bold;
-    margin: 2vh 0; /* Margin to create a gap between elements */
-    display: inline-block;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 12px;
-    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
-}
-
-/* Weekend status styling */
-#weekend-status {
-    font-size: 24px;
-    font-weight: normal; /* Change to regular text */
-    margin: -2vh 0; /* Updated margin to -2vh */
-    display: inline-block;
-    color: white;
-    padding: 0; /* Remove padding to minimize space */
-}
-
-/* Footer styling */
-footer#footer {
-    font-size: 18px;
-    color: white;
-    padding: 20vh 0; /* 20vh padding relative to the viewport height */
-    width: 100%;
-    text-align: center;
-    opacity: 0.7; /* 70% opacity */
-    background: none; /* Remove background */
-    position: relative; /* Use relative positioning to avoid overlap */
-    direction: ltr; /* Ensure footer text is always LTR */
-    text-align: center; /* Ensure footer text is center aligned */
-    margin-top: auto; /* Push footer to the bottom */
-}
-
-/* Feedback link styling */
-#feedback-link {
-    color: white;
-    text-decoration: underline;
-    margin-left: 10px;
-    cursor: pointer;
-}
-
-/* Feedback form overlay styling */
-.overlay {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-.overlay-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
-    max-width: 500px;
-    color: black; /* Black text */
-    text-align: left; /* Left-aligned text */
-}
-
-.close-btn {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close-btn:hover,
-.close-btn:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-#feedback-text {
-    width: 100%;
-    height: 100px;
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #888;
-    border-radius: 4px;
-}
-
-#send-btn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    opacity: 0.5; /* Initially disabled */
-}
-
-#send-btn:enabled {
-    opacity: 1;
-}
-
-/* ✨ Super Fun Hover Effect */
-#status:hover {
-    transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
-    color: #fff;
-    background: linear-gradient(45deg, #ff33cc, #ff66ff, #ff99ff);
-    background-size: 200% 200%;
-    animation: gradientHover 2s ease infinite;
-    text-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
-    cursor: pointer;
-}
-
-/* Animate Background */
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* Animate Hover Effect */
-@keyframes gradientHover {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* RTL Fix for Hebrew */
-.rtl {
-    direction: rtl;
-    unicode-bidi: embed;
-}
-
-/* Responsive Design for Mobile */
-@media (max-width: 600px) {
-    h1 {
-        font-size: 22px;
+    if (userLang.startsWith('de')) {
+        pageTitle.textContent = 'Mit wem sind die Mädchen heute?';
+        pageHeading.textContent = 'Mit wem sind die Mädchen heute?';
+        status.textContent = 'Mit Mama';
+        weekendStatus.textContent = 'Dieses Wochenende: Mit Papa';
+    } else if (userLang.startsWith('he')) {
+        pageTitle.textContent = 'עם מי הבנות היום?';
+        pageHeading.textContent = 'עם מי הבנות היום?';
+        status.textContent = 'עם אמא';
+        weekendStatus.textContent = 'בסוף השבוע הזה: עם אבא';
     }
 
-    #status {
-        font-size: 24px;
-        padding: 15px;
+    // Feedback form functionality
+    const feedbackLink = document.getElementById('feedback-link');
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const closeBtn = document.getElementById('close-btn');
+    const sendBtn = document.getElementById('send-btn');
+    const feedbackText = document.getElementById('feedback-text');
+    const confirmationMessage = document.getElementById('confirmation-message');
+
+    // Show feedback overlay
+    feedbackLink.addEventListener('click', function () {
+        feedbackOverlay.style.display = 'block';
+    });
+
+    // Close feedback overlay
+    closeBtn.addEventListener('click', function () {
+        feedbackOverlay.style.display = 'none';
+    });
+
+    // Enable/disable send button based on text input
+    feedbackText.addEventListener('input', function () {
+        sendBtn.disabled = feedbackText.value.trim() === '';
+    });
+
+    // Send feedback
+    sendBtn.addEventListener('click', function () {
+        const feedback = feedbackText.value.trim();
+        if (feedback) {
+            sendEmail(feedback);
+        }
+    });
+
+    // Send email using EmailJS
+    function sendEmail(feedback) {
+        emailjs.send("service_5xcb59c", "template_g9mg4k5", {
+            message: feedback
+        })
+        .then(function(response) {
+            console.log('SUCCESS!', response.status, response.text);
+            // Show confirmation message
+            confirmationMessage.style.display = 'block';
+
+            // Reset form
+            feedbackText.value = '';
+            sendBtn.disabled = true;
+
+            // Hide confirmation message after 3 seconds
+            setTimeout(function () {
+                confirmationMessage.style.display = 'none';
+                feedbackOverlay.style.display = 'none';
+            }, 3000);
+        }, function(error) {
+            console.log('FAILED...', error);
+        });
     }
 
-    #weekend-status {
-        font-size: 20px;
+    // Additional translation for feedback link
+    if (userLang.startsWith('de')) {
+        feedbackLink.textContent = 'Feedback und Anfragen';
+    } else if (userLang.startsWith('he')) {
+        feedbackLink.textContent = 'משוב ובקשות';
     }
-
-    footer#footer {
-        font-size: 16px;
-        padding: 20vh 0; /* Ensure padding is responsive on mobile */
-        background: none; /* Ensure background is removed on mobile */
-        position: relative; /* Ensure footer scrolls with content */
-        bottom: 0; /* Align to bottom */
-        left: 0;
-        right: 0;
-    }
-
-    .content {
-        padding-top: 10vh; /* Adjust padding for mobile */
-        padding-bottom: 20vh; /* Ensure space for the footer */
-    }
-
-    body {
-        padding-bottom: 0; /* Remove extra padding on body */
-    }
-}
-
-/* Ensure footer is always inside the viewport on vertical mobile */
-@media (max-height: 600px) and (orientation: portrait) {
-    footer#footer {
-        padding: 20vh 0; /* Ensure padding is consistent */
-    }
-
-    .content {
-        padding-bottom: 40vh; /* Ensure space for the footer */
-    }
-}
+});
