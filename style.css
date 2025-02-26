@@ -33,14 +33,6 @@ h1 {
     padding: 10px 20px;
     border-radius: 12px;
     transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
-    margin-bottom: 5px; /* Move the smaller line closer */
-}
-
-/* Feedback container styling */
-#feedback-container {
-    margin-top: 50px;
-    width: 100%;
-    max-width: 800px;
 }
 
 /* ✨ Super Fun Hover Effect */
