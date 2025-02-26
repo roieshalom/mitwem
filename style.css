@@ -125,7 +125,13 @@ h1 {
         font-size: 16px;
         padding: 20px 0; /* Reduce padding on mobile */
         background: none; /* Ensure background is removed on mobile */
-        margin-top: 50px; /* Add margin to avoid overlap with content */
+        position: static; /* Ensure footer does not overlap content */
+        margin-top: auto; /* Push footer to the bottom */
+    }
+
+    .content {
+        padding-top: 50px; /* Adjust padding for mobile */
+        padding-bottom: 50px; /* Adjust padding for mobile to avoid overlap with footer */
     }
 
     body {
