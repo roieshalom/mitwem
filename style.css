@@ -59,6 +59,7 @@ h1 {
     background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent background */
     width: 100%;
     text-align: center;
+    opacity: 0.7; /* 70% opacity */
 }
 
 /* ✨ Super Fun Hover Effect */
