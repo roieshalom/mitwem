@@ -39,9 +39,11 @@ h1 {
 #weekend-status {
     font-size: 24px;
     font-weight: normal; /* Change to regular text */
-    margin-top: -5px; /* Negative margin to remove gap */
+    margin-top: -10px; /* Negative margin to remove gap */
     display: inline-block;
     color: white;
+    padding: 0; /* Remove padding to minimize space */
+    border-radius: 8px;
 }
 
 /* ✨ Super Fun Hover Effect */
