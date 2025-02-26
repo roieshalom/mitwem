@@ -8,7 +8,8 @@ const translations = {
         with_dad: 'With Dad',
         with_mom: 'With Mom',
         this_weekend: 'This Weekend',
-        various: 'Various'
+        mixed: 'mixed',
+        not_sure: 'not sure'
     },
     'de': {
         title: 'Mit wem sind Gali und Daniella?',
@@ -19,7 +20,8 @@ const translations = {
         with_dad: 'Mit Papa',
         with_mom: 'Mit Mama',
         this_weekend: 'Dieses Wochenende',
-        various: 'Verschiedene'
+        mixed: 'gemischt',
+        not_sure: 'nicht sicher'
     },
     'he': {
         title: 'עם מי גלי ודניאלה היום?',
@@ -30,7 +32,8 @@ const translations = {
         with_dad: 'עם אבא',
         with_mom: 'עם אמא',
         this_weekend: 'סוף השבוע הזה',
-        various: 'שונות'
+        mixed: 'מעורב',
+        not_sure: 'לא בטוח'
     }
 };
 
@@ -61,7 +64,7 @@ function formatDate(date) {
 }
 
 // Function to fetch calendar events for a specific date
-function fetchEventsForDate(date, elementId) {
+function fetchEventsForDate(date) {
     const isoDate = date.toISOString().split("T")[0];
     const timeMin = `${isoDate}T00:00:00-00:00`;
     const timeMax = `${isoDate}T23:59:59-00:00`;
@@ -70,19 +73,14 @@ function fetchEventsForDate(date, elementId) {
         .then(response => response.json())
         .then(data => {
             if (data.items && data.items.length > 0) {
-                const eventTitle = data.items[0].summary;
-                const translatedTitle = translateEvent(eventTitle, primaryLang);
-                document.getElementById(elementId).textContent = translatedTitle;
-                return translatedTitle; // Return the title for further usage
+                return data.items[0].summary;
             } else {
-                document.getElementById(elementId).textContent = translations[primaryLang].no_info;
-                return translations[primaryLang].no_info; // Return the no info text for further usage
+                return null;
             }
         })
         .catch(error => {
-            document.getElementById(elementId).textContent = translations[primaryLang].error;
             console.error("Error fetching calendar data:", error);
-            return translations[primaryLang].error; // Return the error text for further usage
+            return null;
         });
 }
 
@@ -129,14 +127,25 @@ statusElement.textContent = translations[primaryLang].checking;
 // Get the upcoming weekend dates
 const { friday, saturday, sunday } = getUpcomingWeekendDates();
 
-// Fetch data for the weekend
-Promise.all([fetchEventsForDate(friday, ""), fetchEventsForDate(saturday, ""), fetchEventsForDate(sunday, "")])
+Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
     .then(results => {
-        const [fridayEvent, saturdayEvent, sundayEvent] = results;
-        const weekendStatus = (fridayEvent === saturdayEvent && saturdayEvent === sundayEvent) ? fridayEvent : translations[primaryLang].various;
+        const [fridayEvent, saturdayEvent, sundayEvent] = results.map(event => translateEvent(event, primaryLang));
+        let weekendStatus;
+
+        if (fridayEvent && fridayEvent === saturdayEvent && saturdayEvent === sundayEvent) {
+            weekendStatus = fridayEvent;
+        } else if (fridayEvent || saturdayEvent || sundayEvent) {
+            weekendStatus = translations[primaryLang].mixed;
+        } else {
+            weekendStatus = translations[primaryLang].not_sure;
+        }
+
         weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${weekendStatus}`;
     });
 
 // Fetch data for today
 const today = new Date();
-fetchEventsForDate(today, "status");
+fetchEventsForDate(today).then(eventTitle => {
+    const translatedTitle = translateEvent(eventTitle, primaryLang);
+    statusElement.textContent = translatedTitle || translations[primaryLang].no_info;
+});
