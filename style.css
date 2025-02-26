@@ -138,3 +138,19 @@ h1 {
         padding-bottom: 0; /* Remove extra padding on body */
     }
 }
+
+/* Ensure footer is always inside the viewport on vertical mobile */
+@media (max-height: 600px) and (orientation: portrait) {
+    #footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px 0; /* Reduce padding to ensure it fits in the viewport */
+        margin-top: 0;
+    }
+
+    .content {
+        padding-bottom: 70px; /* Ensure space for the fixed footer */
+    }
+}
