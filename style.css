@@ -62,7 +62,7 @@ h1 {
 }
 
 /* Footer styling */
-#footer {
+footer#footer {
     font-size: 18px;
     color: white;
     padding: 10vh 0; /* 10vh padding relative to the viewport height */
@@ -122,7 +122,7 @@ h1 {
         font-size: 20px;
     }
 
-    #footer {
+    footer#footer {
         font-size: 16px;
         padding: 10vh 0; /* Ensure padding is responsive on mobile */
         background: none; /* Ensure background is removed on mobile */
@@ -141,7 +141,7 @@ h1 {
 
 /* Ensure footer is always inside the viewport on vertical mobile */
 @media (max-height: 600px) and (orientation: portrait) {
-    #footer {
+    footer#footer {
         position: fixed;
         bottom: 0;
         left: 0;
