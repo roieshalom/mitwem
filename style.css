@@ -35,6 +35,17 @@ h1 {
     transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
 }
 
+/* Weekend status styling */
+#weekend-status {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+    display: inline-block;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 8px;
+}
+
 /* ✨ Super Fun Hover Effect */
 #status:hover {
     transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
@@ -75,5 +86,10 @@ h1 {
     #status {
         font-size: 24px;
         padding: 15px;
+    }
+
+    #weekend-status {
+        font-size: 20px;
+        padding: 10px;
     }
 }
