@@ -22,12 +22,22 @@
         <p id="weekend-status">This Weekend: With Dad</p>
     </div>
     <footer id="footer">
-        ©2025 Made by Papa ❤️ <a id="feedback-link" href="javascript:void(0);">Give Feedback</a> <!-- Feedback link -->
+        ©2025 Made by Papa ❤️ <a id="feedback-link" href="javascript:void(0);">Feedback and Requests</a> <!-- Feedback link -->
     </footer>
     <script src="script.js"></script>
     <script>
         document.getElementById('feedback-link').addEventListener('click', function() {
             window.open('YOUR_GOOGLE_FORM_LINK', '_blank');
+        });
+
+        // Language detection and translation
+        document.addEventListener('DOMContentLoaded', function() {
+            const userLang = navigator.language || navigator.userLanguage;
+            if (userLang.startsWith('de')) {
+                document.getElementById('feedback-link').textContent = 'Feedback und Anfragen';
+            } else if (userLang.startsWith('he')) {
+                document.getElementById('feedback-link').textContent = 'משוב ובקשות';
+            }
         });
     </script>
 </body>
