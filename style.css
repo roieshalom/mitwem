@@ -13,7 +13,8 @@ body {
     background-size: 400% 400%;
     animation: gradientMove 8s ease infinite;
     color: white;
-    overflow: hidden; /* Prevents any scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    overflow-y: auto; /* Allow vertical scrolling for pull-down refresh */
 }
 
 body.rtl {
@@ -22,7 +23,7 @@ body.rtl {
 
 /* Content wrapper to align text to the top */
 .content {
-    padding: 100px; /* Padding from top to align content */
+    padding-top: 100px; /* Padding from top to align content */
     flex-grow: 1; /* Allow content to grow and take available space */
     display: flex;
     flex-direction: column;
@@ -122,7 +123,12 @@ h1 {
 
     #footer {
         font-size: 16px;
-        padding: 100px 0; /* Ensure 100px padding on mobile */
+        padding: 20px 0; /* Reduce padding on mobile */
         background: none; /* Ensure background is removed on mobile */
+        position: static; /* Ensure footer does not overlap content */
+    }
+
+    body {
+        padding-bottom: 50px; /* Add padding to body to accommodate footer */
     }
 }
