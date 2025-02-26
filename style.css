@@ -24,7 +24,7 @@ body.rtl {
 /* Content wrapper to align text to the top */
 .content {
     padding-top: 10vh; /* Padding from top to align content */
-    padding-bottom: 10vh; /* Padding from bottom to avoid overlap with footer */
+    padding-bottom: 20vh; /* Padding from bottom to avoid overlap with footer, double the top padding */
     flex-grow: 1; /* Allow content to grow and take available space */
     display: flex;
     flex-direction: column;
@@ -131,7 +131,7 @@ h1 {
 
     .content {
         padding-top: 10vh; /* Adjust padding for mobile */
-        padding-bottom: 10vh; /* Adjust padding for mobile to avoid overlap with footer */
+        padding-bottom: 20vh; /* Adjust padding for mobile to avoid overlap with footer, double the top padding */
     }
 
     body {
@@ -151,6 +151,6 @@ h1 {
     }
 
     .content {
-        padding-bottom: 15vh; /* Ensure space for the fixed footer */
+        padding-bottom: 25vh; /* Ensure space for the fixed footer */
     }
 }
