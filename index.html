@@ -37,20 +37,5 @@
     </div>
 
     <script src="script.js"></script>
-    <script>
-        document.getElementById('feedback-link').addEventListener('click', function() {
-            document.getElementById('feedback-overlay').style.display = 'block';
-        });
-
-        // Language detection and translation
-        document.addEventListener('DOMContentLoaded', function() {
-            const userLang = navigator.language || navigator.userLanguage;
-            if (userLang.startsWith('de')) {
-                document.getElementById('feedback-link').textContent = 'Feedback und Anfragen';
-            } else if (userLang.startsWith('he')) {
-                document.getElementById('feedback-link').textContent = 'משוב ובקשות';
-            }
-        });
-    </script>
 </body>
 </html>
