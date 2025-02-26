@@ -17,6 +17,10 @@ body {
     overflow-x: hidden; /* Prevents unwanted horizontal scrolling */
 }
 
+body.rtl {
+    direction: rtl; /* Set direction to RTL for Hebrew */
+}
+
 /* Heading styles */
 h1 {
     color: white;
