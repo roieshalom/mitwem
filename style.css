@@ -76,6 +76,23 @@ footer#footer {
     margin-top: auto; /* Push footer to the bottom */
 }
 
+/* Feedback button styling */
+#feedback-button {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #ff69b4;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#feedback-button:hover {
+    background-color: #ff99cc;
+}
+
 /* ✨ Super Fun Hover Effect */
 #status:hover {
     transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
