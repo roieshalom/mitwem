@@ -35,6 +35,13 @@ h1 {
     transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
 }
 
+/* Feedback container styling */
+#feedback-container {
+    margin-top: 50px;
+    width: 100%;
+    max-width: 800px;
+}
+
 /* ✨ Super Fun Hover Effect */
 #status:hover {
     transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
