@@ -5,14 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Who Are the Girls With?</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9N8E0L1302"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-9N8E0L1302');
+    </script>
 </head>
 <body class="ltr"> <!-- Default to LTR, will be changed to RTL by JavaScript if Hebrew is detected -->
     <div class="content"> <!-- Added wrapper for content -->
         <h1 id="page-heading">Who Are the Girls With Today?</h1>
         <p id="status">With Mom</p>
         <p id="weekend-status">This Weekend: With Dad</p>
+        <button id="feedback-button">Give Feedback</button> <!-- Feedback button -->
     </div>
     <footer id="footer">©2025 Made by Papa ❤️</footer> <!-- Added footer -->
     <script src="script.js"></script>
+    <script>
+        document.getElementById('feedback-button').addEventListener('click', function() {
+            window.open('YOUR_GOOGLE_FORM_LINK', '_blank');
+        });
+    </script>
 </body>
 </html>
