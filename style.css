@@ -1,92 +1,19 @@
-/* ✅ General Page Styling (Restored from 4 Hours Ago) */
-body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
-    background-size: 400% 400%;
-    animation: gradientMove 8s ease infinite;
-    color: white;
-}
-
-/* ✅ Headings (Restored) */
-h1 {
-    font-size: 28px;
-    margin-bottom: 10px;
-    color: white;
-    font-weight: normal;
-    line-height: 1.2;
-}
-
-/* ✅ Status Message Styling */
-#status {
-    font-size: 36px;
-    font-weight: bold;
-    margin-top: 20px;
-    display: inline-block;
-    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
-}
-
-/* ✅ Hover Effect (Same as Before) */
-#status:hover {
-    transform: scale(1.2);
-    color: white;
-    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.5);
-}
-
-/* ✅ Weekend Status (Restored) */
-#weekend-status {
-    font-size: 24px;
-    margin-top: 10px;
-    opacity: 1; /* No italics */
-}
-
-/* ✅ Footer (Positioned at Bottom, Just Like Before) */
-footer {
-    width: 100%;
-    padding: 10px;
-    text-align: center;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    font-size: 14px;
-    background: rgba(0, 0, 0, 0.2);
-    color: white; /* Restored original color */
-}
-
-/* ✅ Feedback Link (No Yellow, Restored Style) */
-#feedback-link {
-    color: white;
-    font-weight: normal;
-    text-decoration: none;
-}
-
-#feedback-link:hover {
-    text-decoration: underline;
-}
-
-/* ✅ Feedback Modal Lightbox Overlay */
+/* Feedback Modal Lightbox Overlay */
 .modal {
-    display: none;
+    display: none; /* Hidden by default */
     position: fixed;
-    z-index: 1000;
+    z-index: 1000; /* Ensure it's on top */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* ✅ Modal Content */
+/* Modal Content */
 .modal-content {
     background: white;
     padding: 20px;
@@ -94,11 +21,10 @@ footer {
     width: 300px;
     text-align: center;
     position: relative;
-    color: black;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
-/* ✅ Close Button */
+/* Close Button */
 .close-btn {
     position: absolute;
     top: 10px;
@@ -107,7 +33,7 @@ footer {
     cursor: pointer;
 }
 
-/* ✅ Textarea Styling */
+/* Textarea Styling */
 #feedback-text {
     width: 100%;
     height: 100px;
@@ -115,10 +41,9 @@ footer {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 16px;
 }
 
-/* ✅ Send Button */
+/* Enable/Disable Button Styling */
 #send-feedback {
     background-color: #007BFF;
     color: white;
@@ -134,32 +59,8 @@ footer {
     cursor: not-allowed;
 }
 
-/* ✅ Confirmation Message */
+/* Confirmation Message */
 #feedback-confirmation {
     margin-top: 10px;
     font-weight: bold;
-    color: green;
-}
-
-/* ✅ Smooth Gradient Animation (Same as Before) */
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* ✅ Responsive Design (No Changes) */
-@media (max-width: 600px) {
-    h1 {
-        font-size: 22px;
-    }
-    
-    #status {
-        font-size: 24px;
-        padding: 15px;
-    }
-
-    .modal-content {
-        width: 90%;
-    }
 }
