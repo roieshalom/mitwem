@@ -33,6 +33,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const feedbackLink = document.getElementById("feedback-link");
     const closeBtn = document.querySelector(".close-btn");
 
+    // ✅ Ensure Modal is Hidden on Page Load
+    if (feedbackModal) {
+        feedbackModal.style.display = "none"; // ✅ Hide modal on first load
+    }
+
     // ✅ Detect User Language
     const userLang = navigator.language.startsWith("de") ? "de" :
                      navigator.language.startsWith("he") ? "he" : "en";
@@ -51,8 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ✅ Open Feedback Modal ONLY on Click
     feedbackLink.addEventListener("click", function (event) {
-        event.preventDefault(); // Prevent accidental triggering
-        feedbackModal.style.display = "flex"; 
+        event.preventDefault();
+        feedbackModal.style.display = "flex";
     });
 
     // ✅ Close Modal on "X" Button Click
