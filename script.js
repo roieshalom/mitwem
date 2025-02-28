@@ -1,123 +1,128 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let CALENDAR_ID, API_KEY;
-
-    function loadConfig() {
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = "config.js";
-            script.onload = () => {
-                if (typeof CONFIG !== 'undefined') {
-                    CALENDAR_ID = CONFIG.CALENDAR_ID;
-                    API_KEY = CONFIG.API_KEY;
-                    resolve();
-                } else {
-                    reject("CONFIG is undefined!");
-                }
-            };
-            script.onerror = () => reject("Failed to load config.js");
-            document.head.appendChild(script);
-        });
-    }
-
-    const userLang = navigator.language.startsWith("de") ? "de" :
-                     navigator.language.startsWith("he") ? "he" : "en";
-
+    // Existing translation code
+    const userLang = navigator.language || navigator.userLanguage;
     const pageTitle = document.getElementById('page-title');
     const pageHeading = document.getElementById('page-heading');
     const status = document.getElementById('status');
+    const weekendStatus = document.getElementById('weekend-status');
 
-    // 🚀 Step 1: Set a fixed placeholder with empty space to prevent jumping
-    status.style.minHeight = "40px"; // Adjust this based on expected text height
-    status.style.opacity = "0"; // Make it invisible at first
+    if (userLang.startsWith('de')) {
+        pageTitle.textContent = 'Mit wem sind die Mädchen heute?';
+        pageHeading.textContent = 'Mit wem sind die Mädchen heute?';
+    } else if (userLang.startsWith('he')) {
+        pageTitle.textContent = 'עם מי הבנות היום?';
+        pageHeading.textContent = 'עם מי הבנות היום?';
+    }
+
+    // Google Calendar API Integration
+    const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
+    const API_KEY = "AIzaSyC5Yn2gNLdoCIWctrsnPli-UBfUZ0qdsMY";
 
     function getLocalISODate(date) {
-        const tzOffset = date.getTimezoneOffset() * 60000;
+        const tzOffset = date.getTimezoneOffset() * 60000; // Adjust for local timezone
         return new Date(date - tzOffset).toISOString().split("T")[0];
     }
 
     function fetchTodaysEvent() {
-        if (!CALENDAR_ID || !API_KEY) {
-            console.error("❌ API Keys not loaded!");
-            status.textContent = "Error loading API keys.";
-            status.style.opacity = "1";
-            return;
-        }
-
-        // 🚀 Step 2: Show a neutral placeholder while loading, NO default text
-        status.textContent = userLang.startsWith('he') ? 'בודק...' : userLang.startsWith('de') ? 'Überprüfung...' : 'Checking...';
-        status.style.opacity = "0.7"; // Slight transparency to show it's a placeholder
-
         const today = getLocalISODate(new Date());
         const timeMin = `${today}T00:00:00-00:00`;
         const timeMax = `${today}T23:59:59-00:00`;
 
-        console.log("📅 Fetching events for:", today);
-
         fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
             .then(response => response.json())
             .then(data => {
-                console.log("✅ Fetched Calendar Data:", data);
+                console.log("Fetched Data:", data); // Debugging log
 
                 if (data.items && data.items.length > 0) {
                     const eventTitle = data.items[0].summary.trim();
-                    console.log(`🎯 Selected Event Title (Raw): "${eventTitle}"`);
-
                     const translatedTitle = translateEvent(eventTitle, userLang);
-                    console.log(`🌍 Translated Event Title: "${translatedTitle}"`);
-
                     status.textContent = translatedTitle;
-                    status.style.opacity = "1"; // Full visibility when data is ready
                 } else {
-                    console.warn("⚠️ No events found for today!");
                     status.textContent = userLang.startsWith('he') ? 'אין מידע להיום' : userLang.startsWith('de') ? 'Keine Information für heute' : 'No info available today.';
-                    status.style.opacity = "1";
                 }
             })
             .catch(error => {
-                console.error("❌ Error fetching calendar data:", error);
+                console.error("Error fetching calendar data:", error);
                 status.textContent = userLang.startsWith('he') ? 'שגיאה בטעינת הנתונים' : userLang.startsWith('de') ? 'Fehler beim Laden der Daten' : 'Error loading data.';
-                status.style.opacity = "1";
             });
     }
 
     function translateEvent(title, lang) {
         const eventTranslations = {
-            'roie': {
+            'Roie': {
                 'en': 'With Dad',
                 'de': 'Mit Papa',
                 'he': 'עם אבא'
             },
-            'anat': {
+            'Anat': {
                 'en': 'With Mom',
                 'de': 'Mit Mama',
                 'he': 'עם אמא'
             }
         };
-
-        const cleanedTitle = title.trim().toLowerCase();
-        console.log(`🔍 Checking translation for: "${cleanedTitle}"`);
-
-        if (eventTranslations[cleanedTitle]) {
-            console.log(`✅ Exact match found for: "${cleanedTitle}"`);
-            return eventTranslations[cleanedTitle][lang];
-        }
-
-        for (const key in eventTranslations) {
-            if (cleanedTitle.includes(key)) {
-                console.log(`✅ Matched with partial title: "${key}"`);
-                return eventTranslations[key][lang];
-            }
-        }
-
-        console.warn(`⚠️ Unrecognized event title: "${cleanedTitle}"`);
-        return title; // Fallback to original title
+        return eventTranslations[title] && eventTranslations[title][lang] ? eventTranslations[title][lang] : title;
     }
 
-    loadConfig().then(() => {
-        fetchTodaysEvent();
-    }).catch(error => {
-        console.error("❌ Error loading config.js:", error);
-        status.textContent = "Failed to load config.";
-        status.style.opacity = "1";
+    fetchTodaysEvent(); // Call the function to load today's event
+
+    // Feedback form functionality
+    const feedbackLink = document.getElementById('feedback-link');
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const closeBtn = document.getElementById('close-btn');
+    const sendBtn = document.getElementById('send-btn');
+    const feedbackText = document.getElementById('feedback-text');
+    const confirmationMessage = document.getElementById('confirmation-message');
+
+    // Show feedback overlay
+    feedbackLink.addEventListener('click', function () {
+        feedbackOverlay.style.display = 'block';
     });
-});
+
+    // Close feedback overlay
+    closeBtn.addEventListener('click', function () {
+        feedbackOverlay.style.display = 'none';
+    });
+
+    // Enable/disable send button based on text input
+    feedbackText.addEventListener('input', function () {
+        sendBtn.disabled = feedbackText.value.trim() === '';
+    });
+
+    // Send feedback
+    sendBtn.addEventListener('click', function () {
+        const feedback = feedbackText.value.trim();
+        if (feedback) {
+            sendEmail(feedback);
+        }
+    });
+
+    // Send email using EmailJS
+    function sendEmail(feedback) {
+        emailjs.send("service_5xcb59c", "template_g9mg4k5", { 
+            message: feedback 
+        }).then(
+            function(response) {
+                console.log("SUCCESS!", response.status, response.text);
+                confirmationMessage.style.display = "block";
+
+                feedbackText.value = "";
+                sendBtn.disabled = true;
+
+                setTimeout(function () {
+                    confirmationMessage.style.display = "none";
+                    feedbackOverlay.style.display = "none";
+                }, 3000);
+            },
+            function(error) {
+                console.error("FAILED...", error.text);
+            }
+        );
+    }
+
+    // Additional translation for feedback link
+    if (userLang.startsWith('de')) {
+        feedbackLink.textContent = 'Feedback und Anfragen';
+    } else if (userLang.startsWith('he')) {
+        feedbackLink.textContent = 'משוב ובקשות';
+    }
+});x
