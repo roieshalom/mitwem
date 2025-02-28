@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const pageHeading = document.getElementById('page-heading');
     const status = document.getElementById('status');
 
-    // Set page title and heading language
     if (userLang.startsWith('de')) {
         pageTitle.textContent = 'Mit wem sind die Mädchen heute?';
         pageHeading.textContent = 'Mit wem sind die Mädchen heute?';
@@ -65,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const translatedTitle = translateEvent(eventTitle, userLang);
                     console.log("Translated Event Title:", translatedTitle);
 
-                    status.textContent = translatedTitle;
+                    status.textContent = translatedTitle !== eventTitle ? translatedTitle : "⚠️ Unrecognized Event Title";
                 } else {
                     console.warn("⚠️ No events found for today!");
                     status.textContent = userLang.startsWith('he') ? 'אין מידע להיום' : userLang.startsWith('de') ? 'Keine Information für heute' : 'No info available today.';
@@ -91,7 +90,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         };
 
-        return eventTranslations[title] && eventTranslations[title][lang] ? eventTranslations[title][lang] : title;
+        const trimmedTitle = title.trim();
+        const translation = eventTranslations[trimmedTitle] && eventTranslations[trimmedTitle][lang];
+
+        if (translation) {
+            return translation; // ✅ Correctly translated
+        } else {
+            console.warn(`⚠️ Unrecognized event title: "${trimmedTitle}"`);
+            return title; // Keep original if no match
+        }
     }
 
     loadConfig().then(() => {
