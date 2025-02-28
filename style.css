@@ -126,3 +126,19 @@ footer {
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+
+/* ✅ Responsive Design for Mobile */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 22px;
+    }
+    
+    #status {
+        font-size: 24px;
+        padding: 15px;
+    }
+
+    .modal-content {
+        width: 90%; /* Adjust for smaller screens */
+    }
+}
