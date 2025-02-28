@@ -1,4 +1,4 @@
-/* Feedback Modal Lightbox Overlay */
+/* ✅ Feedback Modal Lightbox Overlay */
 .modal {
     display: none; /* Hidden by default */
     position: fixed;
@@ -13,7 +13,7 @@
     align-items: center;
 }
 
-/* Modal Content */
+/* ✅ Modal Content */
 .modal-content {
     background: white;
     padding: 20px;
@@ -24,7 +24,7 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Close Button */
+/* ✅ Close Button */
 .close-btn {
     position: absolute;
     top: 10px;
@@ -33,7 +33,7 @@
     cursor: pointer;
 }
 
-/* Textarea Styling */
+/* ✅ Textarea Styling */
 #feedback-text {
     width: 100%;
     height: 100px;
@@ -43,7 +43,7 @@
     border-radius: 5px;
 }
 
-/* Enable/Disable Button Styling */
+/* ✅ Enable/Disable Button Styling */
 #send-feedback {
     background-color: #007BFF;
     color: white;
@@ -59,7 +59,7 @@
     cursor: not-allowed;
 }
 
-/* Confirmation Message */
+/* ✅ Confirmation Message */
 #feedback-confirmation {
     margin-top: 10px;
     font-weight: bold;
