@@ -37,13 +37,31 @@ const translations = {
     }
 };
 
-const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
-const API_KEY = "AIzaSyC5Yn2gNLdoCIWctrsnPli-UBfUZ0qdsMY";
+let CALENDAR_ID, API_KEY;
+
+// Load API Keys from config.js
+function loadConfig() {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = "config.js";
+        script.onload = () => {
+            if (typeof CONFIG !== 'undefined') {
+                CALENDAR_ID = CONFIG.CALENDAR_ID;
+                API_KEY = CONFIG.API_KEY;
+                resolve();
+            } else {
+                reject("CONFIG is undefined!");
+            }
+        };
+        script.onerror = () => reject("Failed to load config.js");
+        document.head.appendChild(script);
+    });
+}
 
 // Function to get the upcoming weekend dates (Friday, Saturday, Sunday)
 function getUpcomingWeekendDates() {
     const today = new Date();
-    const daysUntilFriday = (5 - today.getDay() + 7) % 7; // Days until next Friday
+    const daysUntilFriday = (5 - today.getDay() + 7) % 7;
 
     const friday = new Date(today);
     friday.setDate(today.getDate() + daysUntilFriday);
@@ -107,48 +125,55 @@ function detectBrowserLanguage() {
     }
 }
 
-// Get the primary language from the browser settings
-const primaryLang = detectBrowserLanguage();
-// Set the page title, heading, and status based on the selected language
-const pageTitleElement = document.getElementById("page-title");
-const pageHeadingElement = document.getElementById("page-heading");
-const statusElement = document.getElementById("status");
-const weekendStatusElement = document.getElementById("weekend-status");
+// Load API keys and then fetch data
+loadConfig().then(() => {
+    // Get the primary language from the browser settings
+    const primaryLang = detectBrowserLanguage();
 
-if (!pageTitleElement || !pageHeadingElement || !statusElement || !weekendStatusElement) {
-    console.error("Required HTML elements are missing");
-    throw new Error("Required HTML elements are missing"); // Stop execution if elements are missing
-}
+    // Set the page title, heading, and status based on the selected language
+    const pageTitleElement = document.getElementById("page-title");
+    const pageHeadingElement = document.getElementById("page-heading");
+    const statusElement = document.getElementById("status");
+    const weekendStatusElement = document.getElementById("weekend-status");
 
-pageTitleElement.textContent = translations[primaryLang].title;
-pageHeadingElement.textContent = translations[primaryLang].heading;
-statusElement.textContent = translations[primaryLang].checking;
+    if (!pageTitleElement || !pageHeadingElement || !statusElement || !weekendStatusElement) {
+        console.error("Required HTML elements are missing");
+        throw new Error("Required HTML elements are missing");
+    }
 
-// Set the body class based on the language
-document.body.className = primaryLang === 'he' ? 'rtl' : 'ltr';
+    pageTitleElement.textContent = translations[primaryLang].title;
+    pageHeadingElement.textContent = translations[primaryLang].heading;
+    statusElement.textContent = translations[primaryLang].checking;
 
-// Get the upcoming weekend dates
-const { friday, saturday, sunday } = getUpcomingWeekendDates();
+    // Set the body class based on the language
+    document.body.className = primaryLang === 'he' ? 'rtl' : 'ltr';
 
-Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
-    .then(results => {
-        const [fridayEvent, saturdayEvent, sundayEvent] = results.map(event => translateEvent(event, primaryLang));
-        let weekendStatus;
+    // Get the upcoming weekend dates
+    const { friday, saturday, sunday } = getUpcomingWeekendDates();
 
-        if (fridayEvent && fridayEvent === saturdayEvent && saturdayEvent === sundayEvent) {
-            weekendStatus = fridayEvent;
-        } else if (fridayEvent || saturdayEvent || sundayEvent) {
-            weekendStatus = translations[primaryLang].mixed;
-        } else {
-            weekendStatus = translations[primaryLang].not_sure;
-        }
+    Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
+        .then(results => {
+            const [fridayEvent, saturdayEvent, sundayEvent] = results.map(event => translateEvent(event, primaryLang));
+            let weekendStatus;
 
-        weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${weekendStatus}`;
+            if (fridayEvent && fridayEvent === saturdayEvent && saturdayEvent === sundayEvent) {
+                weekendStatus = fridayEvent;
+            } else if (fridayEvent || saturdayEvent || sundayEvent) {
+                weekendStatus = translations[primaryLang].mixed;
+            } else {
+                weekendStatus = translations[primaryLang].not_sure;
+            }
+
+            weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${weekendStatus}`;
+        });
+
+    // Fetch data for today
+    const today = new Date();
+    fetchEventsForDate(today).then(eventTitle => {
+        const translatedTitle = translateEvent(eventTitle, primaryLang);
+        statusElement.textContent = translatedTitle || translations[primaryLang].no_info;
     });
 
-// Fetch data for today
-const today = new Date();
-fetchEventsForDate(today).then(eventTitle => {
-    const translatedTitle = translateEvent(eventTitle, primaryLang);
-    statusElement.textContent = translatedTitle || translations[primaryLang].no_info;
+}).catch(error => {
+    console.error("Error loading config.js:", error);
 });
