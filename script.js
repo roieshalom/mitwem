@@ -1,10 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     let CALENDAR_ID, API_KEY;
 
-    // ✅ EmailJS Initialization
-    emailjs.init("your_public_key_here"); // Replace with your EmailJS public key
-
-    // ✅ Define translations FIRST to prevent errors
     const translations = {
         'en': {
             title: 'Who Are the Girls With?',
@@ -68,8 +64,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const pageTitleElement = document.getElementById("page-title");
     const pageHeadingElement = document.getElementById("page-heading");
     const statusElement = document.getElementById("status");
+    const weekendStatusElement = document.getElementById("weekend-status");
 
-    if (!pageTitleElement || !pageHeadingElement || !statusElement) {
+    if (!pageTitleElement || !pageHeadingElement || !statusElement || !weekendStatusElement) {
         console.error("Required HTML elements are missing");
         return;
     }
@@ -128,6 +125,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function getUpcomingWeekendDates() {
+        const today = new Date();
+        const daysUntilFriday = (5 - today.getDay() + 7) % 7;
+
+        const friday = new Date(today);
+        friday.setDate(today.getDate() + daysUntilFriday);
+
+        const saturday = new Date(friday);
+        saturday.setDate(friday.getDate() + 1);
+
+        const sunday = new Date(saturday);
+        sunday.setDate(saturday.getDate() + 1);
+
+        return { friday, saturday, sunday };
+    }
+
     loadConfig().then(() => {
         const primaryLang = detectBrowserLanguage();
         pageTitleElement.textContent = translations[primaryLang].title;
@@ -139,31 +152,25 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }, 500);
 
+        const { friday, saturday, sunday } = getUpcomingWeekendDates();
+        Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
+            .then(results => {
+                const [fridayEvent, saturdayEvent, sundayEvent] = results.map(event => translateEvent(event, primaryLang));
+                let weekendStatus;
+
+                if (fridayEvent && fridayEvent === saturdayEvent && saturdayEvent === sundayEvent) {
+                    weekendStatus = fridayEvent;
+                } else if (fridayEvent || saturdayEvent || sundayEvent) {
+                    weekendStatus = translations[primaryLang].mixed;
+                } else {
+                    weekendStatus = translations[primaryLang].not_sure;
+                }
+
+                weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${weekendStatus}`;
+            });
+
     }).catch(error => {
         console.error("Config.js failed to load:", error);
         statusElement.textContent = "Failed to load API keys";
-    });
-
-    // ✅ Feedback Modal Logic
-    const feedbackLink = document.getElementById("feedback-link");
-    const feedbackModal = document.getElementById("feedback-modal");
-    const closeBtn = document.querySelector(".close-btn");
-    const feedbackText = document.getElementById("feedback-text");
-    const sendFeedbackBtn = document.getElementById("send-feedback");
-    const feedbackConfirmation = document.getElementById("feedback-confirmation");
-
-    feedbackLink.addEventListener("click", () => feedbackModal.style.display = "block");
-    closeBtn.addEventListener("click", () => feedbackModal.style.display = "none");
-    feedbackText.addEventListener("input", () => sendFeedbackBtn.disabled = !feedbackText.value.trim());
-
-    sendFeedbackBtn.addEventListener("click", function () {
-        emailjs.send("your_service_id", "your_template_id", { message: feedbackText.value })
-            .then(() => {
-                feedbackConfirmation.style.display = "block";
-                feedbackText.value = "";
-                sendFeedbackBtn.disabled = true;
-                setTimeout(() => feedbackModal.style.display = "none", 3000);
-            })
-            .catch(error => console.error("Failed to send feedback:", error));
     });
 });
