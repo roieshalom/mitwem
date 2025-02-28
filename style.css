@@ -1,66 +1,224 @@
-/* Feedback Modal Lightbox Overlay */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1000; /* Ensure it's on top */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+/* General page styles */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0; /* Ensures no extra spacing at the edges */
+    padding: 0; /* Remove padding to align text to the top */
+    min-height: 100vh; /* Ensures background covers full screen */
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-between; /* Space between content and footer */
+    align-items: center;
+    background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
+    background-size: 400% 400%;
+    animation: gradientMove 8s ease infinite;
+    color: white;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    overflow-y: auto; /* Allow vertical scrolling for pull-down refresh */
+}
+
+body.rtl {
+    direction: rtl; /* Set direction to RTL for Hebrew */
+}
+
+/* Content wrapper to align text to the top */
+.content {
+    padding-top: 10vh; /* Padding from top to align content */
+    padding-bottom: 20vh; /* Padding from bottom to avoid overlap with footer, double the top padding */
+    flex-grow: 1; /* Allow content to grow and take available space */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align content to the top */
     align-items: center;
 }
 
-/* Modal Content */
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+/* Heading styles */
+h1 {
+    color: white;
+    font-size: 28px;
+    margin: 0; /* Remove any default margin */
 }
 
-/* Close Button */
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 20px;
+/* Status message styling */
+#status {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 2vh 0; /* Margin to create a gap between elements */
+    display: inline-block;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Weekend status styling */
+#weekend-status {
+    font-size: 24px;
+    font-weight: normal; /* Change to regular text */
+    margin: -2vh 0; /* Updated margin to -2vh */
+    display: inline-block;
+    color: white;
+    padding: 0; /* Remove padding to minimize space */
+}
+
+/* Footer styling */
+footer#footer {
+    font-size: 18px;
+    color: white;
+    padding: 20vh 0; /* 20vh padding relative to the viewport height */
+    width: 100%;
+    text-align: center;
+    opacity: 0.7; /* 70% opacity */
+    background: none; /* Remove background */
+    position: relative; /* Use relative positioning to avoid overlap */
+    direction: ltr; /* Ensure footer text is always LTR */
+    text-align: center; /* Ensure footer text is center aligned */
+    margin-top: auto; /* Push footer to the bottom */
+}
+
+/* Feedback link styling */
+#feedback-link {
+    color: white;
+    text-decoration: underline;
+    margin-left: 10px;
     cursor: pointer;
 }
 
-/* Textarea Styling */
+/* Feedback form overlay styling */
+.overlay {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.overlay-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 500px;
+    color: black; /* Black text */
+    text-align: left; /* Left-aligned text */
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 #feedback-text {
     width: 100%;
     height: 100px;
-    margin: 10px 0;
+    margin-bottom: 10px;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid #888;
+    border-radius: 4px;
 }
 
-/* Enable/Disable Button Styling */
-#send-feedback {
-    background-color: #007BFF;
+#send-btn {
+    background-color: #4CAF50;
     color: white;
+    padding: 10px 20px;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    opacity: 0.5; /* Initially disabled */
 }
 
-#send-feedback:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+#send-btn:enabled {
+    opacity: 1;
 }
 
-/* Confirmation Message */
-#feedback-confirmation {
-    margin-top: 10px;
-    font-weight: bold;
+/* ✨ Super Fun Hover Effect */
+#status:hover {
+    transform: scale(1.2) rotate(3deg); /* Enlarge and tilt */
+    color: #fff;
+    background: linear-gradient(45deg, #ff33cc, #ff66ff, #ff99ff);
+    background-size: 200% 200%;
+    animation: gradientHover 2s ease infinite;
+    text-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
+    cursor: pointer;
+}
+
+/* Animate Background */
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Animate Hover Effect */
+@keyframes gradientHover {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* RTL Fix for Hebrew */
+.rtl {
+    direction: rtl;
+    unicode-bidi: embed;
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 22px;
+    }
+
+    #status {
+        font-size: 24px;
+        padding: 15px;
+    }
+
+    #weekend-status {
+        font-size: 20px;
+    }
+
+    footer#footer {
+        font-size: 16px;
+        padding: 20vh 0; /* Ensure padding is responsive on mobile */
+        background: none; /* Ensure background is removed on mobile */
+        position: relative; /* Ensure footer scrolls with content */
+        bottom: 0; /* Align to bottom */
+        left: 0;
+        right: 0;
+    }
+
+    .content {
+        padding-top: 10vh; /* Adjust padding for mobile */
+        padding-bottom: 20vh; /* Ensure space for the footer */
+    }
+
+    body {
+        padding-bottom: 0; /* Remove extra padding on body */
+    }
+}
+
+/* Ensure footer is always inside the viewport on vertical mobile */
+@media (max-height: 600px) and (orientation: portrait) {
+    footer#footer {
+        padding: 20vh 0; /* Ensure padding is consistent */
+    }
+
+    .content {
+        padding-bottom: 40vh; /* Ensure space for the footer */
+    }
 }
