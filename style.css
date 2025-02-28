@@ -1,6 +1,6 @@
 /* ✅ General Page Styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     text-align: center;
     padding: 20px;
     margin: 0;
@@ -15,6 +15,8 @@ h1 {
     font-size: 28px;
     margin-bottom: 10px;
     color: white;
+    font-weight: bold;
+    line-height: 1.4;
 }
 
 /* ✅ Status Message Styling */
@@ -31,6 +33,14 @@ h1 {
     transform: scale(1.2);
     color: #fff;
     text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.5);
+}
+
+/* ✅ Weekend Status */
+#weekend-status {
+    font-size: 24px;
+    font-style: italic;
+    margin-top: 10px;
+    opacity: 0.9;
 }
 
 /* ✅ Footer */
@@ -95,6 +105,7 @@ footer {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 16px;
 }
 
 /* ✅ Send Button */
