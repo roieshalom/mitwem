@@ -6,15 +6,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const script = document.createElement('script');
             script.src = "config.js";
             script.onload = () => {
-                if (typeof CONFIG !== 'undefined') {
+                if (typeof CONFIG !== 'undefined' && CONFIG.CALENDAR_ID && CONFIG.API_KEY) {
                     CALENDAR_ID = CONFIG.CALENDAR_ID;
                     API_KEY = CONFIG.API_KEY;
                     resolve();
                 } else {
-                    reject("CONFIG is undefined!");
+                    reject("CONFIG is undefined or missing keys!");
                 }
             };
-            script.onerror = () => reject("Failed to load config.js");
+            script.onerror = () => reject("Failed to load config.js (Check if the file exists and is accessible)");
             document.head.appendChild(script);
         });
     }
@@ -25,17 +25,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const pageTitleElement = document.getElementById("page-title");
     const pageHeadingElement = document.getElementById("page-heading");
     const statusElement = document.getElementById("status");
-    const weekendStatusElement = document.getElementById("weekend-status");
 
-    // 🚀 Step 1: Ensure all elements are ready before setting text
-    if (!pageTitleElement || !pageHeadingElement || !statusElement || !weekendStatusElement) {
+    if (!pageTitleElement || !pageHeadingElement || !statusElement) {
         console.error("Required HTML elements are missing");
-        throw new Error("Required HTML elements are missing");
+        return;
     }
 
-    // 🚀 Step 2: Ensure the initial status text is fully hidden
     statusElement.style.visibility = "hidden";
-    statusElement.style.minHeight = "40px"; // Prevents layout shift
 
     function getLocalISODate(date) {
         const tzOffset = date.getTimezoneOffset() * 60000;
@@ -43,6 +39,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function fetchEventsForDate(date) {
+        if (!CALENDAR_ID || !API_KEY) {
+            console.error("API keys are not loaded!");
+            return Promise.resolve(null);
+        }
+
         const isoDate = date.toISOString().split("T")[0];
         const timeMin = `${isoDate}T00:00:00-00:00`;
         const timeMax = `${isoDate}T23:59:59-00:00`;
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (eventTitle === 'Anat') {
             return translations[lang].with_mom;
         } else {
-            return eventTitle;
+            return eventTitle || translations[lang].no_info;
         }
     }
 
@@ -85,28 +86,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadConfig().then(() => {
         const primaryLang = detectBrowserLanguage();
-
-        // 🚀 Step 3: Set empty placeholders first to avoid flickering
         pageTitleElement.textContent = translations[primaryLang].title;
         pageHeadingElement.textContent = translations[primaryLang].heading;
-        statusElement.textContent = "";
-        statusElement.style.visibility = "hidden";
-
-        document.body.className = primaryLang === 'he' ? 'rtl' : 'ltr';
-
-        // 🚀 Step 4: Only show "Loading..." once API keys are confirmed loaded
         statusElement.textContent = translations[primaryLang].checking;
         statusElement.style.visibility = "visible";
 
-        const today = new Date();
-        fetchEventsForDate(today).then(eventTitle => {
-            const translatedTitle = translateEvent(eventTitle, primaryLang);
-            statusElement.textContent = translatedTitle || translations[primaryLang].no_info;
+        fetchEventsForDate(new Date()).then(eventTitle => {
+            statusElement.textContent = translateEvent(eventTitle, primaryLang);
         });
 
     }).catch(error => {
-        console.error("Error loading config.js:", error);
-        statusElement.textContent = "Error loading API keys.";
+        console.error("Config.js failed to load:", error);
+        statusElement.textContent = "Failed to load API keys (Check console for details)";
         statusElement.style.visibility = "visible";
     });
 });
