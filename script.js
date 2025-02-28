@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     let CALENDAR_ID, API_KEY;
 
-    emailjs.init("yy6VY8fPG-HIw6Hf1"); // Your Public Key
+    emailjs.init("yy6VY8fPG-HIw6Hf1"); // ✅ Your Public Key
 
     const translations = {
         'en': {
@@ -63,15 +63,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const userLang = navigator.language.startsWith("de") ? "de" :
                      navigator.language.startsWith("he") ? "he" : "en";
 
-    const pageTitleElement = document.getElementById("page-title");
-    const pageHeadingElement = document.getElementById("page-heading");
     const statusElement = document.getElementById("status");
     const weekendStatusElement = document.getElementById("weekend-status");
-
-    if (!pageTitleElement || !pageHeadingElement || !statusElement || !weekendStatusElement) {
-        console.error("Required HTML elements are missing");
-        return;
-    }
 
     statusElement.textContent = translations[userLang].checking;
     statusElement.style.visibility = "visible";
@@ -116,33 +109,49 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function getUpcomingWeekendDates() {
+        const today = new Date();
+        const daysUntilFriday = (5 - today.getDay() + 7) % 7;
+
+        const friday = new Date(today);
+        friday.setDate(today.getDate() + daysUntilFriday);
+
+        const saturday = new Date(friday);
+        saturday.setDate(friday.getDate() + 1);
+
+        const sunday = new Date(saturday);
+        sunday.setDate(saturday.getDate() + 1);
+
+        return { friday, saturday, sunday };
+    }
+
     loadConfig().then(() => {
         fetchEventsForDate(new Date()).then(eventTitle => {
             statusElement.textContent = translateEvent(eventTitle, userLang);
         });
-    }).catch(error => {
-        console.error("Config.js failed to load:", error);
-        statusElement.textContent = "Failed to load API keys";
+
+        const { friday, saturday, sunday } = getUpcomingWeekendDates();
+        Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
+            .then(results => {
+                const [fridayEvent, saturdayEvent, sundayEvent] = results.map(event => translateEvent(event, userLang));
+                let weekendStatus = fridayEvent || saturdayEvent || sundayEvent
+                    ? translations[userLang].this_weekend + ": " + (fridayEvent === saturdayEvent && saturdayEvent === sundayEvent ? fridayEvent : translations[userLang].mixed)
+                    : translations[userLang].not_sure;
+
+                weekendStatusElement.textContent = weekendStatus;
+            });
+
     });
 
     // ✅ Feedback Modal Logic
-    const feedbackLink = document.getElementById("feedback-link");
     const feedbackModal = document.getElementById("feedback-modal");
-    const closeBtn = document.querySelector(".close-btn");
-    const feedbackText = document.getElementById("feedback-text");
-    const sendFeedbackBtn = document.getElementById("send-feedback");
-    const feedbackConfirmation = document.getElementById("feedback-confirmation");
+    document.getElementById("feedback-link").addEventListener("click", () => feedbackModal.style.display = "block");
+    document.querySelector(".close-btn").addEventListener("click", () => feedbackModal.style.display = "none");
 
-    feedbackLink.addEventListener("click", () => feedbackModal.style.display = "block");
-    closeBtn.addEventListener("click", () => feedbackModal.style.display = "none");
-    feedbackText.addEventListener("input", () => sendFeedbackBtn.disabled = !feedbackText.value.trim());
-
-    sendFeedbackBtn.addEventListener("click", function () {
-        emailjs.send("service_5xcb59c", "template_g9mg4k5", { message: feedbackText.value })
+    document.getElementById("send-feedback").addEventListener("click", function () {
+        emailjs.send("service_5xcb59c", "template_g9mg4k5", { message: document.getElementById("feedback-text").value })
             .then(() => {
-                feedbackConfirmation.style.display = "block";
-                feedbackText.value = "";
-                sendFeedbackBtn.disabled = true;
+                document.getElementById("feedback-confirmation").style.display = "block";
                 setTimeout(() => feedbackModal.style.display = "none", 3000);
             })
             .catch(error => console.error("Failed to send feedback:", error));
