@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Google Calendar API Integration
-    const CALENDAR_ID = "your_calendar_id_here@group.calendar.google.com"; // Replace with actual Calendar ID
-    const API_KEY = "your_google_api_key_here"; // Replace with actual API Key
+    const CALENDAR_ID = "3cvfh0265cia5frpnepbhaemp4@group.calendar.google.com";
+    const API_KEY = "AIzaSyC5Yn2gNLdoCIWctrsnPli-UBfUZ0qdsMY";
 
     function getLocalISODate(date) {
         const tzOffset = date.getTimezoneOffset() * 60000; // Adjust for local timezone
