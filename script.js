@@ -53,18 +53,18 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
             .then(response => response.json())
             .then(data => {
-                console.log("Fetched Data:", data);
+                console.log("📅 Fetched Calendar Data:", data);
 
                 if (data.items && data.items.length > 0) {
-                    console.log("Today's Event Titles:", data.items.map(event => event.summary));
+                    console.log("✅ Today's Event Titles:", data.items.map(event => `"${event.summary}"`));
 
                     const eventTitle = data.items[0].summary.trim();
-                    console.log("Selected Event Title:", eventTitle);
+                    console.log(`🎯 Selected Event Title: "${eventTitle}"`);
 
                     const translatedTitle = translateEvent(eventTitle, userLang);
-                    console.log("Translated Event Title:", translatedTitle);
+                    console.log(`🌍 Translated Event Title: "${translatedTitle}"`);
 
-                    status.textContent = translatedTitle !== eventTitle ? translatedTitle : "⚠️ Unrecognized Event Title";
+                    status.textContent = translatedTitle !== eventTitle ? translatedTitle : `⚠️ Unrecognized: "${eventTitle}"`;
                 } else {
                     console.warn("⚠️ No events found for today!");
                     status.textContent = userLang.startsWith('he') ? 'אין מידע להיום' : userLang.startsWith('de') ? 'Keine Information für heute' : 'No info available today.';
@@ -90,14 +90,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         };
 
-        const trimmedTitle = title.trim();
-        const translation = eventTranslations[trimmedTitle] && eventTranslations[trimmedTitle][lang];
+        const cleanedTitle = title.trim();
+        console.log(`🔍 Checking translation for: "${cleanedTitle}"`);
+
+        const translation = eventTranslations[cleanedTitle] && eventTranslations[cleanedTitle][lang];
 
         if (translation) {
             return translation; // ✅ Correctly translated
         } else {
-            console.warn(`⚠️ Unrecognized event title: "${trimmedTitle}"`);
-            return title; // Keep original if no match
+            console.warn(`⚠️ Unrecognized event title: "${cleanedTitle}"`);
+            return `⚠️ Unrecognized: "${cleanedTitle}"`; // Show actual title in UI
         }
     }
 
@@ -140,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
             message: feedback 
         }).then(
             function(response) {
-                console.log("SUCCESS!", response.status, response.text);
+                console.log("✅ SUCCESS!", response.status, response.text);
                 confirmationMessage.style.display = "block";
 
                 feedbackText.value = "";
@@ -152,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, 3000);
             },
             function(error) {
-                console.error("FAILED...", error.text);
+                console.error("❌ FAILED...", error.text);
             }
         );
     }
