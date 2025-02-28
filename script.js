@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Load API Keys from config.js
     let CALENDAR_ID, API_KEY;
 
     function loadConfig() {
@@ -20,12 +19,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Existing translation code
     const userLang = navigator.language || navigator.userLanguage;
     const pageTitle = document.getElementById('page-title');
     const pageHeading = document.getElementById('page-heading');
     const status = document.getElementById('status');
 
+    // Set page title and heading language
     if (userLang.startsWith('de')) {
         pageTitle.textContent = 'Mit wem sind die Mädchen heute?';
         pageHeading.textContent = 'Mit wem sind die Mädchen heute?';
@@ -46,6 +45,8 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        status.textContent = userLang.startsWith('he') ? 'טוען...' : userLang.startsWith('de') ? 'Laden...' : 'Loading...';
+
         const today = getLocalISODate(new Date());
         const timeMin = `${today}T00:00:00-00:00`;
         const timeMax = `${today}T23:59:59-00:00`;
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const translatedTitle = translateEvent(eventTitle, userLang);
                     console.log("Translated Event Title:", translatedTitle);
 
-                    status.textContent = translatedTitle !== eventTitle ? translatedTitle : "⚠️ Unrecognized Event Title";
+                    status.textContent = translatedTitle;
                 } else {
                     console.warn("⚠️ No events found for today!");
                     status.textContent = userLang.startsWith('he') ? 'אין מידע להיום' : userLang.startsWith('de') ? 'Keine Information für heute' : 'No info available today.';
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     loadConfig().then(() => {
-        fetchTodaysEvent(); // Call API only after keys are loaded
+        fetchTodaysEvent();
     }).catch(error => {
         console.error("❌ Error loading config.js:", error);
         status.textContent = "Failed to load config.";
