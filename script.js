@@ -20,41 +20,43 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ✅ Correctly Initialize EmailJS
+    // ✅ Initialize EmailJS
     emailjs.init({ publicKey: "yy6VY8fPG-HIw6Hf1" });
 
-    // ✅ Elements
+    // ✅ DOM Elements
     const statusElement = document.getElementById("status");
     const weekendStatusElement = document.getElementById("weekend-status");
     const feedbackModal = document.getElementById("feedback-modal");
     const feedbackText = document.getElementById("feedback-text");
     const sendFeedbackBtn = document.getElementById("send-feedback");
     const feedbackConfirmation = document.getElementById("feedback-confirmation");
+    const feedbackLink = document.getElementById("feedback-link");
+    const closeBtn = document.querySelector(".close-btn");
 
     // ✅ Detect User Language
     const userLang = navigator.language.startsWith("de") ? "de" :
                      navigator.language.startsWith("he") ? "he" : "en";
 
-    // ✅ Set Placeholder Loading Text
+    // ✅ Set Default Loading Text (No More Blank Screen)
     statusElement.textContent = "Loading...";
     weekendStatusElement.textContent = "Loading weekend info...";
 
-    // ✅ Prevent CTRL + SHIFT + R from opening modal (Allow Refresh)
+    // ✅ Prevent CTRL + SHIFT + R from Opening Modal
     document.addEventListener("keydown", function(event) {
         if ((event.ctrlKey && event.shiftKey && event.key === "R") || 
             (event.ctrlKey && event.key === "r")) {
-            return; // ✅ Allow page refresh
+            return; // ✅ Allow page refresh, do nothing
         }
     });
 
-    // ✅ Show Feedback Modal
-    document.getElementById("feedback-link").addEventListener("click", function (event) {
-        event.preventDefault(); // ⛔ Prevent accidental key triggering
-        feedbackModal.style.display = "flex"; // ✅ Show overlay properly
+    // ✅ Open Feedback Modal ONLY on Click
+    feedbackLink.addEventListener("click", function (event) {
+        event.preventDefault(); // Prevent accidental triggering
+        feedbackModal.style.display = "flex"; 
     });
 
-    // ✅ Close Feedback Modal
-    document.querySelector(".close-btn").addEventListener("click", () => {
+    // ✅ Close Modal on "X" Button Click
+    closeBtn.addEventListener("click", () => {
         feedbackModal.style.display = "none";
     });
 
@@ -110,4 +112,76 @@ document.addEventListener('DOMContentLoaded', function () {
         return fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
             .then(response => response.json())
             .then(data => {
-   
+                if (data.items && data.items.length > 0) {
+                    return data.items[0].summary;
+                } else {
+                    return null;
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching calendar data:", error);
+                return null;
+            });
+    }
+
+    // ✅ Translate Event Names
+    function translateEvent(eventTitle, lang) {
+        const translations = {
+            'Roie': {
+                'en': 'With Dad',
+                'de': 'Mit Papa',
+                'he': 'עם אבא'
+            },
+            'Anat': {
+                'en': 'With Mom',
+                'de': 'Mit Mama',
+                'he': 'עם אמא'
+            }
+        };
+
+        return translations[eventTitle] && translations[eventTitle][lang] 
+            ? translations[eventTitle][lang] 
+            : eventTitle || "No info available";
+    }
+
+    // ✅ Get Upcoming Weekend Dates
+    function getUpcomingWeekendDates() {
+        const today = new Date();
+        const daysUntilFriday = (5 - today.getDay() + 7) % 7;
+
+        const friday = new Date(today);
+        friday.setDate(today.getDate() + daysUntilFriday);
+
+        const saturday = new Date(friday);
+        saturday.setDate(friday.getDate() + 1);
+
+        const sunday = new Date(saturday);
+        sunday.setDate(saturday.getDate() + 1);
+
+        return { friday, saturday, sunday };
+    }
+
+    // ✅ Load Data After Config is Loaded
+    loadConfig().then(() => {
+        // ✅ Fetch & Display Today's Event
+        fetchEventsForDate(new Date()).then(eventTitle => {
+            statusElement.textContent = translateEvent(eventTitle, userLang);
+        });
+
+        // ✅ Fetch & Display Weekend Info
+        const { friday, saturday, sunday } = getUpcomingWeekendDates();
+        Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
+            .then(results => {
+                const [fridayEvent, saturdayEvent, sundayEvent] = results.map(event => translateEvent(event, userLang));
+                let weekendStatus = fridayEvent || saturdayEvent || sundayEvent
+                    ? `This Weekend: ${fridayEvent === saturdayEvent && saturdayEvent === sundayEvent ? fridayEvent : "Mixed"}`
+                    : "Not sure";
+
+                weekendStatusElement.textContent = weekendStatus;
+            });
+
+    }).catch(error => {
+        console.error("Failed to load config.js:", error);
+        statusElement.textContent = "Failed to load API keys.";
+    });
+});
