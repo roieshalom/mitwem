@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     let CALENDAR_ID, API_KEY;
 
+    emailjs.init("yy6VY8fPG-HIw6Hf1"); // Your Public Key
+
     const translations = {
         'en': {
             title: 'Who Are the Girls With?',
@@ -114,63 +116,35 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function detectBrowserLanguage() {
-        const lang = navigator.language || navigator.userLanguage;
-        if (lang.startsWith('de')) {
-            return 'de';
-        } else if (lang.startsWith('he')) {
-            return 'he';
-        } else {
-            return 'en';
-        }
-    }
-
-    function getUpcomingWeekendDates() {
-        const today = new Date();
-        const daysUntilFriday = (5 - today.getDay() + 7) % 7;
-
-        const friday = new Date(today);
-        friday.setDate(today.getDate() + daysUntilFriday);
-
-        const saturday = new Date(friday);
-        saturday.setDate(friday.getDate() + 1);
-
-        const sunday = new Date(saturday);
-        sunday.setDate(saturday.getDate() + 1);
-
-        return { friday, saturday, sunday };
-    }
-
     loadConfig().then(() => {
-        const primaryLang = detectBrowserLanguage();
-        pageTitleElement.textContent = translations[primaryLang].title;
-        pageHeadingElement.textContent = translations[primaryLang].heading;
-
-        setTimeout(() => {
-            fetchEventsForDate(new Date()).then(eventTitle => {
-                statusElement.textContent = translateEvent(eventTitle, primaryLang);
-            });
-        }, 500);
-
-        const { friday, saturday, sunday } = getUpcomingWeekendDates();
-        Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
-            .then(results => {
-                const [fridayEvent, saturdayEvent, sundayEvent] = results.map(event => translateEvent(event, primaryLang));
-                let weekendStatus;
-
-                if (fridayEvent && fridayEvent === saturdayEvent && saturdayEvent === sundayEvent) {
-                    weekendStatus = fridayEvent;
-                } else if (fridayEvent || saturdayEvent || sundayEvent) {
-                    weekendStatus = translations[primaryLang].mixed;
-                } else {
-                    weekendStatus = translations[primaryLang].not_sure;
-                }
-
-                weekendStatusElement.textContent = `${translations[primaryLang].this_weekend}: ${weekendStatus}`;
-            });
-
+        fetchEventsForDate(new Date()).then(eventTitle => {
+            statusElement.textContent = translateEvent(eventTitle, userLang);
+        });
     }).catch(error => {
         console.error("Config.js failed to load:", error);
         statusElement.textContent = "Failed to load API keys";
+    });
+
+    // ✅ Feedback Modal Logic
+    const feedbackLink = document.getElementById("feedback-link");
+    const feedbackModal = document.getElementById("feedback-modal");
+    const closeBtn = document.querySelector(".close-btn");
+    const feedbackText = document.getElementById("feedback-text");
+    const sendFeedbackBtn = document.getElementById("send-feedback");
+    const feedbackConfirmation = document.getElementById("feedback-confirmation");
+
+    feedbackLink.addEventListener("click", () => feedbackModal.style.display = "block");
+    closeBtn.addEventListener("click", () => feedbackModal.style.display = "none");
+    feedbackText.addEventListener("input", () => sendFeedbackBtn.disabled = !feedbackText.value.trim());
+
+    sendFeedbackBtn.addEventListener("click", function () {
+        emailjs.send("service_5xcb59c", "template_g9mg4k5", { message: feedbackText.value })
+            .then(() => {
+                feedbackConfirmation.style.display = "block";
+                feedbackText.value = "";
+                sendFeedbackBtn.disabled = true;
+                setTimeout(() => feedbackModal.style.display = "none", 3000);
+            })
+            .catch(error => console.error("Failed to send feedback:", error));
     });
 });
