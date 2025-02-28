@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const pageHeading = document.getElementById('page-heading');
     const status = document.getElementById('status');
 
-    // Set a placeholder with fixed height to prevent shifting
-    status.style.opacity = "0.5"; // Semi-transparent placeholder
-    status.style.minHeight = "40px"; // Ensure space is always reserved
+    // 🚀 Step 1: Set a fixed placeholder with empty space to prevent jumping
+    status.style.minHeight = "40px"; // Adjust this based on expected text height
+    status.style.opacity = "0"; // Make it invisible at first
 
     function getLocalISODate(date) {
         const tzOffset = date.getTimezoneOffset() * 60000;
@@ -37,44 +37,44 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function fetchTodaysEvent() {
         if (!CALENDAR_ID || !API_KEY) {
-            console.error("API Keys not loaded!");
+            console.error("❌ API Keys not loaded!");
             status.textContent = "Error loading API keys.";
             status.style.opacity = "1";
             return;
         }
 
-        // Keep the placeholder but set "Loading..."
-        status.textContent = userLang.startsWith('he') ? 'טוען...' : userLang.startsWith('de') ? 'Laden...' : 'Loading...';
-        status.style.opacity = "0.7"; // Slightly visible, placeholder effect
+        // 🚀 Step 2: Show a neutral placeholder while loading, NO default text
+        status.textContent = userLang.startsWith('he') ? 'בודק...' : userLang.startsWith('de') ? 'Überprüfung...' : 'Checking...';
+        status.style.opacity = "0.7"; // Slight transparency to show it's a placeholder
 
         const today = getLocalISODate(new Date());
         const timeMin = `${today}T00:00:00-00:00`;
         const timeMax = `${today}T23:59:59-00:00`;
 
-        console.log("Fetching events for:", today);
+        console.log("📅 Fetching events for:", today);
 
         fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
             .then(response => response.json())
             .then(data => {
-                console.log("Fetched Calendar Data:", data);
+                console.log("✅ Fetched Calendar Data:", data);
 
                 if (data.items && data.items.length > 0) {
                     const eventTitle = data.items[0].summary.trim();
-                    console.log(`Selected Event Title (Raw): "${eventTitle}"`);
+                    console.log(`🎯 Selected Event Title (Raw): "${eventTitle}"`);
 
                     const translatedTitle = translateEvent(eventTitle, userLang);
-                    console.log(`Translated Event Title: "${translatedTitle}"`);
+                    console.log(`🌍 Translated Event Title: "${translatedTitle}"`);
 
                     status.textContent = translatedTitle;
                     status.style.opacity = "1"; // Full visibility when data is ready
                 } else {
-                    console.warn("No events found for today!");
+                    console.warn("⚠️ No events found for today!");
                     status.textContent = userLang.startsWith('he') ? 'אין מידע להיום' : userLang.startsWith('de') ? 'Keine Information für heute' : 'No info available today.';
                     status.style.opacity = "1";
                 }
             })
             .catch(error => {
-                console.error("Error fetching calendar data:", error);
+                console.error("❌ Error fetching calendar data:", error);
                 status.textContent = userLang.startsWith('he') ? 'שגיאה בטעינת הנתונים' : userLang.startsWith('de') ? 'Fehler beim Laden der Daten' : 'Error loading data.';
                 status.style.opacity = "1";
             });
@@ -95,28 +95,28 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         const cleanedTitle = title.trim().toLowerCase();
-        console.log(`Checking translation for: "${cleanedTitle}"`);
+        console.log(`🔍 Checking translation for: "${cleanedTitle}"`);
 
         if (eventTranslations[cleanedTitle]) {
-            console.log(`Exact match found for: "${cleanedTitle}"`);
+            console.log(`✅ Exact match found for: "${cleanedTitle}"`);
             return eventTranslations[cleanedTitle][lang];
         }
 
         for (const key in eventTranslations) {
             if (cleanedTitle.includes(key)) {
-                console.log(`Matched with partial title: "${key}"`);
+                console.log(`✅ Matched with partial title: "${key}"`);
                 return eventTranslations[key][lang];
             }
         }
 
-        console.warn(`Unrecognized event title: "${cleanedTitle}"`);
+        console.warn(`⚠️ Unrecognized event title: "${cleanedTitle}"`);
         return title; // Fallback to original title
     }
 
     loadConfig().then(() => {
         fetchTodaysEvent();
     }).catch(error => {
-        console.error("Error loading config.js:", error);
+        console.error("❌ Error loading config.js:", error);
         status.textContent = "Failed to load config.";
         status.style.opacity = "1";
     });
