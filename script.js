@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'en': {
             title: 'Who Are the Girls With?',
             heading: 'Who Are the Girls With Today?',
-            checking: 'Checking...',
+            checking: 'Loading...',
             no_info: 'No info available today.',
             error: 'Error loading data.',
             with_dad: 'With Dad',
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'de': {
             title: 'Mit wem sind Gali und Daniella?',
             heading: 'Mit wem sind Gali und Daniella heute zusammen?',
-            checking: 'Überprüfung...',
+            checking: 'Laden...',
             no_info: 'Keine Informationen für heute verfügbar.',
             error: 'Fehler beim Laden der Daten.',
             with_dad: 'Mit Papa',
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
         'he': {
             title: 'עם מי גלי ודניאלה היום?',
             heading: 'עם מי גלי ודניאלה היום?',
-            checking: 'בודק...',
+            checking: 'טוען...',
             no_info: 'אין מידע זמין להיום.',
             error: 'שגיאה בטעינת הנתונים.',
             with_dad: 'עם אבא',
@@ -72,8 +72,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // ✅ Step 1: Ensure status starts as hidden to prevent flickering
-    statusElement.style.visibility = "hidden";
+    // ✅ Step 1: Immediately show "Loading..." to prevent flicker
+    statusElement.textContent = translations[userLang].checking;
+    statusElement.style.visibility = "visible";
 
     function getLocalISODate(date) {
         const tzOffset = date.getTimezoneOffset() * 60000;
@@ -126,21 +127,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // ✅ Step 2: Load API keys and fetch data
+    // ✅ Step 2: Load API keys and fetch data with slight delay for smooth transition
     loadConfig().then(() => {
         const primaryLang = detectBrowserLanguage();
         pageTitleElement.textContent = translations[primaryLang].title;
         pageHeadingElement.textContent = translations[primaryLang].heading;
-        statusElement.textContent = translations[primaryLang].checking;
-        statusElement.style.visibility = "visible";
 
-        fetchEventsForDate(new Date()).then(eventTitle => {
-            statusElement.textContent = translateEvent(eventTitle, primaryLang);
-        });
+        // ✅ Step 3: Wait 500ms before replacing "Loading..." to prevent flicker
+        setTimeout(() => {
+            fetchEventsForDate(new Date()).then(eventTitle => {
+                statusElement.textContent = translateEvent(eventTitle, primaryLang);
+            });
+        }, 500);
 
     }).catch(error => {
         console.error("Config.js failed to load:", error);
         statusElement.textContent = "Failed to load API keys (Check console for details)";
-        statusElement.style.visibility = "visible";
     });
 });
