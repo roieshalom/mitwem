@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     let CALENDAR_ID, API_KEY;
 
+    // ✅ EmailJS Initialization
+    emailjs.init("your_public_key_here"); // Replace with your EmailJS public key
+
     // ✅ Define translations FIRST to prevent errors
     const translations = {
         'en': {
@@ -41,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    // ✅ Load API Keys from config.js
     function loadConfig() {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -55,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     reject("CONFIG is undefined or missing keys!");
                 }
             };
-            script.onerror = () => reject("Failed to load config.js (Check if the file exists and is accessible)");
+            script.onerror = () => reject("Failed to load config.js");
             document.head.appendChild(script);
         });
     }
@@ -72,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // ✅ Step 1: Immediately show "Loading..." to prevent flicker
     statusElement.textContent = translations[userLang].checking;
     statusElement.style.visibility = "visible";
 
@@ -127,13 +128,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // ✅ Step 2: Load API keys and fetch data with slight delay for smooth transition
     loadConfig().then(() => {
         const primaryLang = detectBrowserLanguage();
         pageTitleElement.textContent = translations[primaryLang].title;
         pageHeadingElement.textContent = translations[primaryLang].heading;
 
-        // ✅ Step 3: Wait 500ms before replacing "Loading..." to prevent flicker
         setTimeout(() => {
             fetchEventsForDate(new Date()).then(eventTitle => {
                 statusElement.textContent = translateEvent(eventTitle, primaryLang);
@@ -142,6 +141,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }).catch(error => {
         console.error("Config.js failed to load:", error);
-        statusElement.textContent = "Failed to load API keys (Check console for details)";
+        statusElement.textContent = "Failed to load API keys";
+    });
+
+    // ✅ Feedback Modal Logic
+    const feedbackLink = document.getElementById("feedback-link");
+    const feedbackModal = document.getElementById("feedback-modal");
+    const closeBtn = document.querySelector(".close-btn");
+    const feedbackText = document.getElementById("feedback-text");
+    const sendFeedbackBtn = document.getElementById("send-feedback");
+    const feedbackConfirmation = document.getElementById("feedback-confirmation");
+
+    feedbackLink.addEventListener("click", () => feedbackModal.style.display = "block");
+    closeBtn.addEventListener("click", () => feedbackModal.style.display = "none");
+    feedbackText.addEventListener("input", () => sendFeedbackBtn.disabled = !feedbackText.value.trim());
+
+    sendFeedbackBtn.addEventListener("click", function () {
+        emailjs.send("your_service_id", "your_template_id", { message: feedbackText.value })
+            .then(() => {
+                feedbackConfirmation.style.display = "block";
+                feedbackText.value = "";
+                sendFeedbackBtn.disabled = true;
+                setTimeout(() => feedbackModal.style.display = "none", 3000);
+            })
+            .catch(error => console.error("Failed to send feedback:", error));
     });
 });
