@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const pageHeading = document.getElementById('page-heading');
     const status = document.getElementById('status');
 
+    // 🚀 Step 1: Make status hidden at first
+    status.style.visibility = "hidden";
+
     function getLocalISODate(date) {
         const tzOffset = date.getTimezoneOffset() * 60000;
         return new Date(date - tzOffset).toISOString().split("T")[0];
@@ -35,11 +38,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!CALENDAR_ID || !API_KEY) {
             console.error("❌ API Keys not loaded!");
             status.textContent = "Error loading API keys.";
+            status.style.visibility = "visible";
             return;
         }
 
-        // ✅ Only show "Loading..." at first, no default text
+        // 🚀 Step 2: Show "Loading..." only when script runs
         status.textContent = userLang.startsWith('he') ? 'טוען...' : userLang.startsWith('de') ? 'Laden...' : 'Loading...';
+        status.style.visibility = "visible";
 
         const today = getLocalISODate(new Date());
         const timeMin = `${today}T00:00:00-00:00`;
@@ -109,5 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }).catch(error => {
         console.error("❌ Error loading config.js:", error);
         status.textContent = "Failed to load config.";
+        status.style.visibility = "visible";
     });
 });
