@@ -19,18 +19,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const userLang = navigator.language || navigator.userLanguage;
+    const userLang = navigator.language.startsWith("de") ? "de" :
+                     navigator.language.startsWith("he") ? "he" : "en";
+
     const pageTitle = document.getElementById('page-title');
     const pageHeading = document.getElementById('page-heading');
     const status = document.getElementById('status');
-
-    if (userLang.startsWith('de')) {
-        pageTitle.textContent = 'Mit wem sind die Mädchen heute?';
-        pageHeading.textContent = 'Mit wem sind die Mädchen heute?';
-    } else if (userLang.startsWith('he')) {
-        pageTitle.textContent = 'עם מי הבנות היום?';
-        pageHeading.textContent = 'עם מי הבנות היום?';
-    }
 
     function getLocalISODate(date) {
         const tzOffset = date.getTimezoneOffset() * 60000;
@@ -44,35 +38,40 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        status.textContent = userLang.startsWith('he') ? 'טוען...' : userLang.startsWith('de') ? 'Laden...' : 'Loading...';
+        status.textContent = "🔄 Loading..."; // Clear any old text
 
         const today = getLocalISODate(new Date());
         const timeMin = `${today}T00:00:00-00:00`;
         const timeMax = `${today}T23:59:59-00:00`;
 
+        console.log("📅 Fetching events for:", today);
+
         fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
             .then(response => response.json())
             .then(data => {
-                console.log("📅 Fetched Calendar Data:", data);
+                console.log("✅ Fetched Calendar Data:", data);
 
                 if (data.items && data.items.length > 0) {
-                    console.log("✅ Today's Event Titles:", data.items.map(event => `"${event.summary}"`));
-
                     const eventTitle = data.items[0].summary.trim();
                     console.log(`🎯 Selected Event Title (Raw): "${eventTitle}"`);
 
                     const translatedTitle = translateEvent(eventTitle, userLang);
                     console.log(`🌍 Translated Event Title: "${translatedTitle}"`);
 
-                    status.textContent = translatedTitle !== eventTitle ? translatedTitle : `⚠️ Unrecognized: "${eventTitle}"`;
+                    if (translatedTitle !== eventTitle) {
+                        status.textContent = translatedTitle; // ✅ Show the translated title
+                    } else {
+                        console.warn(`⚠️ Unrecognized event title: "${eventTitle}"`);
+                        status.textContent = `⚠️ Unrecognized: "${eventTitle}"`;
+                    }
                 } else {
                     console.warn("⚠️ No events found for today!");
-                    status.textContent = userLang.startsWith('he') ? 'אין מידע להיום' : userLang.startsWith('de') ? 'Keine Information für heute' : 'No info available today.';
+                    status.textContent = "📅 No events today";
                 }
             })
             .catch(error => {
                 console.error("❌ Error fetching calendar data:", error);
-                status.textContent = userLang.startsWith('he') ? 'שגיאה בטעינת הנתונים' : userLang.startsWith('de') ? 'Fehler beim Laden der Daten' : 'Error loading data.';
+                status.textContent = "❌ Error loading events";
             });
     }
 
@@ -90,15 +89,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         };
 
-        const cleanedTitle = title.trim().toLowerCase(); // Convert everything to lowercase
+        const cleanedTitle = title.trim().toLowerCase();
         console.log(`🔍 Checking translation for: "${cleanedTitle}"`);
 
-        // Check for an exact match
         if (eventTranslations[cleanedTitle]) {
+            console.log(`✅ Exact match found for: "${cleanedTitle}"`);
             return eventTranslations[cleanedTitle][lang];
         }
 
-        // **New: Allow Partial Matching**
         for (const key in eventTranslations) {
             if (cleanedTitle.includes(key)) {
                 console.log(`✅ Matched with partial title: "${key}"`);
@@ -107,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         console.warn(`⚠️ Unrecognized event title: "${cleanedTitle}"`);
-        return `⚠️ Unrecognized: "${cleanedTitle}"`; // Show actual title in UI
+        return title; // Fallback to original title
     }
 
     loadConfig().then(() => {
