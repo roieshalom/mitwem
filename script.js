@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        status.textContent = "🔄 Loading..."; // Clear any old text
+        // ✅ Only show "Loading..." at first, no default text
+        status.textContent = userLang.startsWith('he') ? 'טוען...' : userLang.startsWith('de') ? 'Laden...' : 'Loading...';
 
         const today = getLocalISODate(new Date());
         const timeMin = `${today}T00:00:00-00:00`;
@@ -58,20 +59,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     const translatedTitle = translateEvent(eventTitle, userLang);
                     console.log(`🌍 Translated Event Title: "${translatedTitle}"`);
 
-                    if (translatedTitle !== eventTitle) {
-                        status.textContent = translatedTitle; // ✅ Show the translated title
-                    } else {
-                        console.warn(`⚠️ Unrecognized event title: "${eventTitle}"`);
-                        status.textContent = `⚠️ Unrecognized: "${eventTitle}"`;
-                    }
+                    status.textContent = translatedTitle;
                 } else {
                     console.warn("⚠️ No events found for today!");
-                    status.textContent = "📅 No events today";
+                    status.textContent = userLang.startsWith('he') ? 'אין מידע להיום' : userLang.startsWith('de') ? 'Keine Information für heute' : 'No info available today.';
                 }
             })
             .catch(error => {
                 console.error("❌ Error fetching calendar data:", error);
-                status.textContent = "❌ Error loading events";
+                status.textContent = userLang.startsWith('he') ? 'שגיאה בטעינת הנתונים' : userLang.startsWith('de') ? 'Fehler beim Laden der Daten' : 'Error loading data.';
             });
     }
 
