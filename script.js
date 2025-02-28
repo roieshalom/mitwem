@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log("✅ Today's Event Titles:", data.items.map(event => `"${event.summary}"`));
 
                     const eventTitle = data.items[0].summary.trim();
-                    console.log(`🎯 Selected Event Title: "${eventTitle}"`);
+                    console.log(`🎯 Selected Event Title (Raw): "${eventTitle}"`);
 
                     const translatedTitle = translateEvent(eventTitle, userLang);
                     console.log(`🌍 Translated Event Title: "${translatedTitle}"`);
@@ -78,29 +78,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function translateEvent(title, lang) {
         const eventTranslations = {
-            'Roie': {
+            'roie': {
                 'en': 'With Dad',
                 'de': 'Mit Papa',
                 'he': 'עם אבא'
             },
-            'Anat': {
+            'anat': {
                 'en': 'With Mom',
                 'de': 'Mit Mama',
                 'he': 'עם אמא'
             }
         };
 
-        const cleanedTitle = title.trim();
+        const cleanedTitle = title.trim().toLowerCase(); // Convert everything to lowercase
         console.log(`🔍 Checking translation for: "${cleanedTitle}"`);
 
-        const translation = eventTranslations[cleanedTitle] && eventTranslations[cleanedTitle][lang];
-
-        if (translation) {
-            return translation; // ✅ Correctly translated
-        } else {
-            console.warn(`⚠️ Unrecognized event title: "${cleanedTitle}"`);
-            return `⚠️ Unrecognized: "${cleanedTitle}"`; // Show actual title in UI
+        // Check for an exact match
+        if (eventTranslations[cleanedTitle]) {
+            return eventTranslations[cleanedTitle][lang];
         }
+
+        // **New: Allow Partial Matching**
+        for (const key in eventTranslations) {
+            if (cleanedTitle.includes(key)) {
+                console.log(`✅ Matched with partial title: "${key}"`);
+                return eventTranslations[key][lang];
+            }
+        }
+
+        console.warn(`⚠️ Unrecognized event title: "${cleanedTitle}"`);
+        return `⚠️ Unrecognized: "${cleanedTitle}"`; // Show actual title in UI
     }
 
     loadConfig().then(() => {
@@ -109,59 +116,4 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error("❌ Error loading config.js:", error);
         status.textContent = "Failed to load config.";
     });
-
-    // Feedback form functionality
-    const feedbackLink = document.getElementById('feedback-link');
-    const feedbackOverlay = document.getElementById('feedback-overlay');
-    const closeBtn = document.getElementById('close-btn');
-    const sendBtn = document.getElementById('send-btn');
-    const feedbackText = document.getElementById('feedback-text');
-    const confirmationMessage = document.getElementById('confirmation-message');
-
-    feedbackLink.addEventListener('click', function () {
-        feedbackOverlay.style.display = 'block';
-    });
-
-    closeBtn.addEventListener('click', function () {
-        feedbackOverlay.style.display = 'none';
-    });
-
-    feedbackText.addEventListener('input', function () {
-        sendBtn.disabled = feedbackText.value.trim() === '';
-    });
-
-    sendBtn.addEventListener('click', function () {
-        const feedback = feedbackText.value.trim();
-        if (feedback) {
-            sendEmail(feedback);
-        }
-    });
-
-    function sendEmail(feedback) {
-        emailjs.send("service_5xcb59c", "template_g9mg4k5", { 
-            message: feedback 
-        }).then(
-            function(response) {
-                console.log("✅ SUCCESS!", response.status, response.text);
-                confirmationMessage.style.display = "block";
-
-                feedbackText.value = "";
-                sendBtn.disabled = true;
-
-                setTimeout(function () {
-                    confirmationMessage.style.display = "none";
-                    feedbackOverlay.style.display = "none";
-                }, 3000);
-            },
-            function(error) {
-                console.error("❌ FAILED...", error.text);
-            }
-        );
-    }
-
-    if (userLang.startsWith('de')) {
-        feedbackLink.textContent = 'Feedback und Anfragen';
-    } else if (userLang.startsWith('he')) {
-        feedbackLink.textContent = 'משוב ובקשות';
-    }
 });
