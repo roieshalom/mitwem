@@ -10,9 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const sendFeedbackBtn = document.getElementById("send-feedback");
     const feedbackConfirmation = document.getElementById("feedback-confirmation");
 
-    // ✅ Show modal when clicking "Feedback"
-    document.getElementById("feedback-link").addEventListener("click", () => {
-        feedbackModal.style.display = "flex"; // Show overlay
+    // ✅ Ensure clicking "Feedback" only opens the modal
+    document.getElementById("feedback-link").addEventListener("click", function (event) {
+        event.preventDefault(); // ⛔ Prevent accidental key triggering
+        feedbackModal.style.display = "flex"; // ✅ Show overlay properly
     });
 
     // ✅ Close modal when clicking the "X" button
@@ -24,6 +25,16 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener("click", function(event) {
         if (event.target === feedbackModal) {
             feedbackModal.style.display = "none";
+        }
+    });
+
+    // ✅ Prevent CTRL + SHIFT + R from opening the modal
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "r" && (event.ctrlKey || event.shiftKey)) {
+            return; // ✅ Allow page refresh, do nothing
+        }
+        if (event.key === "r") {
+            feedbackModal.style.display = "flex"; // If "r" is pressed alone, open modal
         }
     });
 
