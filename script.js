@@ -1,6 +1,47 @@
 document.addEventListener('DOMContentLoaded', function () {
     let CALENDAR_ID, API_KEY;
 
+    // ✅ Define translations FIRST to prevent errors
+    const translations = {
+        'en': {
+            title: 'Who Are the Girls With?',
+            heading: 'Who Are the Girls With Today?',
+            checking: 'Checking...',
+            no_info: 'No info available today.',
+            error: 'Error loading data.',
+            with_dad: 'With Dad',
+            with_mom: 'With Mom',
+            this_weekend: 'This Weekend',
+            mixed: 'mixed',
+            not_sure: 'not sure'
+        },
+        'de': {
+            title: 'Mit wem sind Gali und Daniella?',
+            heading: 'Mit wem sind Gali und Daniella heute zusammen?',
+            checking: 'Überprüfung...',
+            no_info: 'Keine Informationen für heute verfügbar.',
+            error: 'Fehler beim Laden der Daten.',
+            with_dad: 'Mit Papa',
+            with_mom: 'Mit Mama',
+            this_weekend: 'Dieses Wochenende',
+            mixed: 'gemischt',
+            not_sure: 'nicht sicher'
+        },
+        'he': {
+            title: 'עם מי גלי ודניאלה היום?',
+            heading: 'עם מי גלי ודניאלה היום?',
+            checking: 'בודק...',
+            no_info: 'אין מידע זמין להיום.',
+            error: 'שגיאה בטעינת הנתונים.',
+            with_dad: 'עם אבא',
+            with_mom: 'עם אמא',
+            this_weekend: 'סוף השבוע הזה',
+            mixed: 'מעורב',
+            not_sure: 'לא בטוח'
+        }
+    };
+
+    // ✅ Load API Keys from config.js
     function loadConfig() {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -31,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    // ✅ Step 1: Ensure status starts as hidden to prevent flickering
     statusElement.style.visibility = "hidden";
 
     function getLocalISODate(date) {
@@ -84,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ✅ Step 2: Load API keys and fetch data
     loadConfig().then(() => {
         const primaryLang = detectBrowserLanguage();
         pageTitleElement.textContent = translations[primaryLang].title;
