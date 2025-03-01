@@ -26,14 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ✅ DOM Elements
     const statusElement = document.getElementById("status");
     const weekendStatusElement = document.getElementById("weekend-status");
-    const feedbackModal = document.getElementById("feedback-modal");
-    const feedbackText = document.getElementById("feedback-text");
-    const sendFeedbackBtn = document.getElementById("send-feedback");
-    const feedbackConfirmation = document.getElementById("feedback-confirmation");
-    const feedbackLink = document.getElementById("feedback-link");
-    const closeBtn = document.querySelector(".close-btn");
 
     // ✅ Ensure Modal is Hidden on Page Load
+    const feedbackModal = document.getElementById("feedback-modal");
     if (feedbackModal) {
         feedbackModal.style.display = "none";
     }
@@ -45,57 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ✅ Set Default Loading Text
     statusElement.textContent = "Loading...";
     weekendStatusElement.textContent = "Loading weekend info...";
-
-    // ✅ Prevent CTRL + SHIFT + R from Opening Modal
-    document.addEventListener("keydown", function(event) {
-        if ((event.ctrlKey && event.shiftKey && event.key === "R") || 
-            (event.ctrlKey && event.key === "r")) {
-            return; // ✅ Allow page refresh, do nothing
-        }
-    });
-
-    // ✅ Open Feedback Modal ONLY on Click
-    feedbackLink.addEventListener("click", function (event) {
-        event.preventDefault();
-        feedbackModal.style.display = "flex";
-    });
-
-    // ✅ Close Modal on "X" Button Click
-    closeBtn.addEventListener("click", () => {
-        feedbackModal.style.display = "none";
-    });
-
-    // ✅ Close Modal When Clicking Outside It
-    window.addEventListener("click", function(event) {
-        if (event.target === feedbackModal) {
-            feedbackModal.style.display = "none";
-        }
-    });
-
-    // ✅ Enable "Send" Button When User Types
-    feedbackText.addEventListener("input", () => {
-        sendFeedbackBtn.disabled = feedbackText.value.trim() === "";
-    });
-
-    // ✅ Send Feedback via EmailJS
-    sendFeedbackBtn.addEventListener("click", function () {
-        const feedbackMessage = feedbackText.value.trim();
-        if (!feedbackMessage) return;
-
-        emailjs.send("service_5xcb59c", "template_g9mg4k5", { 
-            message: feedbackMessage 
-        }, "yy6VY8fPG-HIw6Hf1")
-        .then(() => {
-            feedbackConfirmation.style.display = "block";
-            feedbackText.value = "";
-            sendFeedbackBtn.disabled = true;
-            setTimeout(() => {
-                feedbackModal.style.display = "none"; // Close modal after 3 seconds
-                feedbackConfirmation.style.display = "none";
-            }, 3000);
-        })
-        .catch(error => console.error("Failed to send feedback:", error));
-    });
 
     // ✅ Function to Get Local Date
     function getLocalISODate(date) {
@@ -118,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.items && data.items.length > 0) {
-                    return data.items[0].summary;
+                    return data.items[0].summary.trim(); // ✅ Trim whitespace
                 } else {
                     return null;
                 }
@@ -132,20 +76,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // ✅ Translate Event Names
     function translateEvent(eventTitle, lang) {
         const translations = {
-            'Roie': {
-                'en': 'With Dad',
-                'de': 'Mit Papa',
-                'he': 'עם אבא'
-            },
-            'Anat': {
-                'en': 'With Mom',
-                'de': 'Mit Mama',
-                'he': 'עם אמא'
-            }
+            'Roie': { 'en': 'With Dad', 'de': 'Mit Papa', 'he': 'עם אבא' },
+            'Anat': { 'en': 'With Mom', 'de': 'Mit Mama', 'he': 'עם אמא' }
         };
 
-        return translations[eventTitle] && translations[eventTitle][lang] 
-            ? translations[eventTitle][lang] 
+        return translations[eventTitle] && translations[eventTitle][lang]
+            ? translations[eventTitle][lang]
             : eventTitle || "No info available";
     }
 
@@ -173,26 +109,18 @@ document.addEventListener('DOMContentLoaded', function () {
             statusElement.textContent = translateEvent(eventTitle, userLang);
         });
 
-        // ✅ Fetch & Display Weekend Info (FIXED LOGIC)
+        // ✅ Fetch & Display Weekend Info (FINAL FIX)
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
         Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
             .then(results => {
-                const [fridayEvent, saturdayEvent, sundayEvent] = results.map(event => translateEvent(event, userLang));
+                // ✅ Normalize event titles
+                const normalizedResults = results.map(event => event ? event.trim() : null);
+
+                // ✅ Check if all days are the same
+                const allSame = normalizedResults.every(val => val && val === normalizedResults[0]);
 
                 let weekendStatus;
-                if (fridayEvent && fridayEvent === saturdayEvent && saturdayEvent === sundayEvent) {
-                    weekendStatus = fridayEvent; // ✅ All three days match
-                } else if (!fridayEvent && !saturdayEvent && !sundayEvent) {
-                    weekendStatus = "No info available"; // ✅ No events found
-                } else {
-                    weekendStatus = "Mixed"; // ✅ At least two different values
-                }
-
-                weekendStatusElement.textContent = `This Weekend: ${weekendStatus}`;
-            });
-
-    }).catch(error => {
-        console.error("Failed to load config.js:", error);
-        statusElement.textContent = "Failed to load API keys.";
-    });
-});
+                if (allSame && normalizedResults[0]) {
+                    weekendStatus = translateEvent(normalizedResults[0], userLang); // ✅ All three days match
+                } else if (normalizedResults.some(val => val !== null)) {
+                    weekendStatus = "Mixed"; // ✅
