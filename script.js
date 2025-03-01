@@ -35,14 +35,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ✅ Ensure Modal is Hidden on Page Load
     if (feedbackModal) {
-        feedbackModal.style.display = "none"; // ✅ Hide modal on first load
+        feedbackModal.style.display = "none";
     }
 
     // ✅ Detect User Language
     const userLang = navigator.language.startsWith("de") ? "de" :
                      navigator.language.startsWith("he") ? "he" : "en";
 
-    // ✅ Set Default Loading Text (No More Blank Screen)
+    // ✅ Set Default Loading Text
     statusElement.textContent = "Loading...";
     weekendStatusElement.textContent = "Loading weekend info...";
 
@@ -173,16 +173,22 @@ document.addEventListener('DOMContentLoaded', function () {
             statusElement.textContent = translateEvent(eventTitle, userLang);
         });
 
-        // ✅ Fetch & Display Weekend Info
+        // ✅ Fetch & Display Weekend Info (FIXED LOGIC)
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
         Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
             .then(results => {
                 const [fridayEvent, saturdayEvent, sundayEvent] = results.map(event => translateEvent(event, userLang));
-                let weekendStatus = fridayEvent || saturdayEvent || sundayEvent
-                    ? `This Weekend: ${fridayEvent === saturdayEvent && saturdayEvent === sundayEvent ? fridayEvent : "Mixed"}`
-                    : "Not sure";
 
-                weekendStatusElement.textContent = weekendStatus;
+                let weekendStatus;
+                if (fridayEvent && fridayEvent === saturdayEvent && saturdayEvent === sundayEvent) {
+                    weekendStatus = fridayEvent; // ✅ All three days match
+                } else if (!fridayEvent && !saturdayEvent && !sundayEvent) {
+                    weekendStatus = "No info available"; // ✅ No events found
+                } else {
+                    weekendStatus = "Mixed"; // ✅ At least two different values
+                }
+
+                weekendStatusElement.textContent = `This Weekend: ${weekendStatus}`;
             });
 
     }).catch(error => {
