@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     let CALENDAR_ID, API_KEY;
 
-    // ✅ Load Config (Google Calendar API Keys)
     function loadConfig() {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -20,37 +19,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ✅ Initialize EmailJS
     emailjs.init({ publicKey: "yy6VY8fPG-HIw6Hf1" });
 
-    // ✅ DOM Elements
     const statusElement = document.getElementById("status");
     const weekendStatusElement = document.getElementById("weekend-status");
 
-    // ✅ Ensure Modal is Hidden on Page Load
-    const feedbackModal = document.getElementById("feedback-modal");
-    if (feedbackModal) {
-        feedbackModal.style.display = "none";
-    }
-
-    // ✅ Detect User Language
     const userLang = navigator.language.startsWith("de") ? "de" :
                      navigator.language.startsWith("he") ? "he" : "en";
 
-    // ✅ Set Default Loading Text
     statusElement.textContent = "Loading...";
     weekendStatusElement.textContent = "Loading weekend info...";
 
-    // ✅ Function to Get Local Date
     function getLocalISODate(date) {
         const tzOffset = date.getTimezoneOffset() * 60000;
         return new Date(date - tzOffset).toISOString().split("T")[0];
     }
 
-    // ✅ Fetch Events for a Given Date
     function fetchEventsForDate(date) {
         if (!CALENDAR_ID || !API_KEY) {
-            console.error("API keys are not loaded!");
+            console.error("❌ API keys are not loaded!");
             return Promise.resolve(null);
         }
 
@@ -61,19 +48,19 @@ document.addEventListener('DOMContentLoaded', function () {
         return fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
             .then(response => response.json())
             .then(data => {
+                console.log(`📅 Events for ${isoDate}:`, data.items);
                 if (data.items && data.items.length > 0) {
-                    return data.items[0].summary.trim(); // ✅ Trim spaces
+                    return data.items[0].summary.trim();
                 } else {
                     return null;
                 }
             })
             .catch(error => {
-                console.error("Error fetching calendar data:", error);
+                console.error("❌ Error fetching calendar data:", error);
                 return null;
             });
     }
 
-    // ✅ Translate Event Names
     function translateEvent(eventTitle, lang) {
         const translations = {
             'Roie': { 'en': 'With Dad', 'de': 'Mit Papa', 'he': 'עם אבא' },
@@ -85,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
             : eventTitle || "No info available";
     }
 
-    // ✅ Get Upcoming Weekend Dates
     function getUpcomingWeekendDates() {
         const today = new Date();
         const daysUntilFriday = (5 - today.getDay() + 7) % 7;
@@ -102,40 +88,34 @@ document.addEventListener('DOMContentLoaded', function () {
         return { friday, saturday, sunday };
     }
 
-    // ✅ Load Data After Config is Loaded
     loadConfig().then(() => {
-        // ✅ Fetch & Display Today's Event
         fetchEventsForDate(new Date()).then(eventTitle => {
             statusElement.textContent = translateEvent(eventTitle, userLang);
         });
 
-        // ✅ Fetch & Display Weekend Info (FINAL FIX)
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
         Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
             .then(results => {
-                console.log("Weekend Raw Data:", results); // ✅ Debugging Log
+                console.log("📝 Weekend Raw Data:", results);
 
-                // ✅ Normalize event titles
                 const normalizedResults = results.map(event => event ? event.trim() : null);
-
-                // ✅ Check if all days are the same
-                const uniqueValues = [...new Set(normalizedResults.filter(Boolean))]; // ✅ Remove duplicates & nulls
+                const uniqueValues = [...new Set(normalizedResults.filter(Boolean))];
 
                 let weekendStatus;
-                if (uniqueValues.length === 1) {
-                    weekendStatus = translateEvent(uniqueValues[0], userLang); // ✅ All three days match
-                } else if (uniqueValues.length > 1) {
-                    weekendStatus = "Mixed"; // ✅ Multiple different values
+                if (normalizedResults.every(event => event === null)) {
+                    weekendStatus = "No Data Available"; // ✅ Fix: Show when all days are missing
+                } else if (uniqueValues.length === 1) {
+                    weekendStatus = translateEvent(uniqueValues[0], userLang);
                 } else {
-                    weekendStatus = "No info available"; // ✅ No data found
+                    weekendStatus = "Mixed";
                 }
 
-                console.log("Weekend Processed Status:", weekendStatus); // ✅ Debugging Log
+                console.log("✅ Weekend Processed Status:", weekendStatus);
                 weekendStatusElement.textContent = `This Weekend: ${weekendStatus}`;
             });
 
     }).catch(error => {
-        console.error("Failed to load config.js:", error);
+        console.error("❌ Failed to load config.js:", error);
         statusElement.textContent = "Failed to load API keys.";
     });
 });
