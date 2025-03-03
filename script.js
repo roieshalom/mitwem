@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.items && data.items.length > 0) {
                     return data.items[0].summary.trim();
                 } else {
-                    return null;
+                    return null; // ✅ Explicitly return null when there's no meeting
                 }
             })
             .catch(error => {
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return translations[eventTitle] && translations[eventTitle][lang]
             ? translations[eventTitle][lang]
-            : "No Data Available"; // ✅ Fix: If event title is null, return "No Data Available"
+            : null; // ✅ If there's no translation, return null instead of wrong text
     }
 
     function getUpcomingWeekendDates() {
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadConfig().then(() => {
         fetchEventsForDate(new Date()).then(eventTitle => {
-            statusElement.textContent = translateEvent(eventTitle, userLang);
+            statusElement.textContent = translateEvent(eventTitle, userLang) || "No Data Available";
         });
 
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
@@ -95,12 +95,13 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(results => {
                 console.log("📝 Weekend Raw Data:", results);
 
-                const normalizedResults = results.map(event => event ? event.trim() : null);
-                const uniqueValues = [...new Set(normalizedResults.filter(Boolean))];
+                // ✅ Ensure null values are properly handled
+                const cleanedResults = results.map(event => event ? event.trim() : null);
+                const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
 
                 let weekendStatus;
-                if (normalizedResults.every(event => event === null)) {
-                    weekendStatus = "No Data Available"; // ✅ Fix: Show when all days are missing
+                if (cleanedResults.every(event => event === null)) {
+                    weekendStatus = "No Data Available"; // ✅ If all 3 days are null, show "No Data Available"
                 } else if (uniqueValues.length === 1) {
                     weekendStatus = translateEvent(uniqueValues[0], userLang);
                 } else {
