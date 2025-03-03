@@ -33,29 +33,31 @@ document.addEventListener('DOMContentLoaded', function () {
         return new Date(date - tzOffset).toISOString().split("T")[0];
     }
 
-    function fetchEventsForDate(date) {
+    async function fetchEventsForDate(date) {
         if (!CALENDAR_ID || !API_KEY) {
             console.error("❌ API keys are not loaded!");
-            return Promise.resolve(null);
+            return null;
         }
 
         const isoDate = date.toISOString().split("T")[0];
         const timeMin = `${isoDate}T00:00:00-00:00`;
         const timeMax = `${isoDate}T23:59:59-00:00`;
 
-        return fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.items && data.items.length > 0) {
-                    return data.items[0].summary.trim();
-                } else {
-                    return null; // ✅ Explicitly return null when there's no meeting
-                }
-            })
-            .catch(error => {
-                console.error("❌ Error fetching calendar data:", error);
-                return null;
-            });
+        try {
+            const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`);
+            const data = await response.json();
+
+            console.log(`📅 Checking events for ${isoDate}:`, data.items);
+
+            if (data.items && data.items.length > 0) {
+                return data.items[0].summary.trim(); // ✅ Return only the first event name
+            } else {
+                return null; // ✅ Explicitly return null for no events
+            }
+        } catch (error) {
+            console.error("❌ Error fetching calendar data:", error);
+            return null;
+        }
     }
 
     function translateEvent(eventTitle, lang) {
@@ -66,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return translations[eventTitle] && translations[eventTitle][lang]
             ? translations[eventTitle][lang]
-            : null; // ✅ If there's no translation, return null instead of wrong text
+            : null; // ✅ Ensure a fallback of `null` to prevent misclassification
     }
 
     function getUpcomingWeekendDates() {
@@ -85,33 +87,42 @@ document.addEventListener('DOMContentLoaded', function () {
         return { friday, saturday, sunday };
     }
 
-    loadConfig().then(() => {
-        fetchEventsForDate(new Date()).then(eventTitle => {
-            statusElement.textContent = translateEvent(eventTitle, userLang) || "No Data Available";
-        });
+    loadConfig().then(async () => {
+        const today = new Date();
+        const todayEvent = await fetchEventsForDate(today);
+        statusElement.textContent = translateEvent(todayEvent, userLang) || "No Data Available";
 
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
-        Promise.all([fetchEventsForDate(friday), fetchEventsForDate(saturday), fetchEventsForDate(sunday)])
-            .then(results => {
-                console.log("📝 Weekend Raw Data:", results);
+        const results = await Promise.all([
+            fetchEventsForDate(friday),
+            fetchEventsForDate(saturday),
+            fetchEventsForDate(sunday)
+        ]);
 
-                // ✅ Ensure null values are properly handled
-                const cleanedResults = results.map(event => event ? event.trim() : null);
-                const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
+        console.log("📝 Weekend Raw Data:", results);
 
-                let weekendStatus;
-                if (cleanedResults.every(event => event === null)) {
-                    weekendStatus = "No Data Available"; // ✅ If all 3 days are null, show "No Data Available"
-                } else if (uniqueValues.length === 1) {
-                    weekendStatus = translateEvent(uniqueValues[0], userLang);
-                } else {
-                    weekendStatus = "Mixed";
-                }
+        // ✅ Ensure `null` values stay `null`
+        const cleanedResults = results.map(event => event && event.trim() ? event.trim() : null);
+        console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
-                console.log("✅ Weekend Processed Status:", weekendStatus);
-                weekendStatusElement.textContent = `This Weekend: ${weekendStatus}`;
-            });
+        // ✅ If *all* days are empty, show "No Data Available"
+        if (cleanedResults.every(event => event === null)) {
+            weekendStatusElement.textContent = "This Weekend: No Data Available";
+            return;
+        }
 
+        // ✅ Filter unique non-null values
+        const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
+
+        let weekendStatus;
+        if (uniqueValues.length === 1) {
+            weekendStatus = translateEvent(uniqueValues[0], userLang);
+        } else {
+            weekendStatus = "Mixed";
+        }
+
+        console.log("✅ Weekend Processed Status:", weekendStatus);
+        weekendStatusElement.textContent = `This Weekend: ${weekendStatus}`;
     }).catch(error => {
         console.error("❌ Failed to load config.js:", error);
         statusElement.textContent = "Failed to load API keys.";
