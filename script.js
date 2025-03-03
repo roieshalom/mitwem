@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
 
-        // ✅ Define the start and end of the local day correctly
+        // ✅ Ensure the time range covers the full local day
         const timeMin = new Date(date.setHours(0, 1, 0, 0)).toISOString();
         const timeMax = new Date(date.setHours(23, 59, 59, 999)).toISOString();
 
@@ -49,7 +49,14 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`📅 Checking events for ${getLocalISODate(date)}:`, data.items);
 
             if (data.items && data.items.length > 0) {
-                return data.items[0].summary.trim();
+                // ✅ Ensure we are only looking at events that **start** on this day
+                const filteredEvents = data.items.filter(event => {
+                    const eventStart = event.start?.dateTime || event.start?.date; // Handle all-day events
+                    return eventStart && eventStart.startsWith(getLocalISODate(date));
+                });
+
+                console.log(`✅ Filtered events for ${getLocalISODate(date)}:`, filteredEvents);
+                return filteredEvents.length > 0 ? filteredEvents[0].summary.trim() : null;
             } else {
                 return null;
             }
@@ -98,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
             fetchEventsForDate(sunday)
         ]);
 
-        console.log("📝 Weekend Raw Data:", results);
+        console.log("📝 Weekend Raw Data (Before Filter):", results);
 
         const cleanedResults = results.map(event => event && event.trim() ? event.trim() : null);
         console.log("🧹 Cleaned Weekend Data:", cleanedResults);
@@ -124,3 +131,4 @@ document.addEventListener('DOMContentLoaded', function () {
         statusElement.textContent = "Failed to load API keys.";
     });
 });
+
