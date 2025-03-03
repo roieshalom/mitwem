@@ -29,8 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     weekendStatusElement.textContent = "Loading weekend info...";
 
     function getLocalISODate(date) {
-        const tzOffset = date.getTimezoneOffset() * 60000;
-        return new Date(date - tzOffset).toISOString().split("T")[0];
+        return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split("T")[0];
     }
 
     async function fetchEventsForDate(date) {
@@ -39,20 +38,20 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
 
-        const isoDate = date.toISOString().split("T")[0];
-        const timeMin = `${isoDate}T00:00:00-00:00`;
-        const timeMax = `${isoDate}T23:59:59-00:00`;
+        // ✅ Define the start and end of the local day correctly
+        const timeMin = new Date(date.setHours(0, 1, 0, 0)).toISOString();
+        const timeMax = new Date(date.setHours(23, 59, 59, 999)).toISOString();
 
         try {
             const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`);
             const data = await response.json();
 
-            console.log(`📅 Checking events for ${isoDate}:`, data.items);
+            console.log(`📅 Checking events for ${getLocalISODate(date)}:`, data.items);
 
             if (data.items && data.items.length > 0) {
-                return data.items[0].summary.trim(); // ✅ Return only the first event name
+                return data.items[0].summary.trim();
             } else {
-                return null; // ✅ Explicitly return null for no events
+                return null;
             }
         } catch (error) {
             console.error("❌ Error fetching calendar data:", error);
@@ -68,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return translations[eventTitle] && translations[eventTitle][lang]
             ? translations[eventTitle][lang]
-            : null; // ✅ Ensure a fallback of `null` to prevent misclassification
+            : null;
     }
 
     function getUpcomingWeekendDates() {
@@ -101,17 +100,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         console.log("📝 Weekend Raw Data:", results);
 
-        // ✅ Ensure `null` values stay `null`
         const cleanedResults = results.map(event => event && event.trim() ? event.trim() : null);
         console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
-        // ✅ If *all* days are empty, show "No Data Available"
         if (cleanedResults.every(event => event === null)) {
             weekendStatusElement.textContent = "This Weekend: No Data Available";
             return;
         }
 
-        // ✅ Filter unique non-null values
         const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
 
         let weekendStatus;
