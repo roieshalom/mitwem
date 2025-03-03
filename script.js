@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`)
             .then(response => response.json())
             .then(data => {
-                console.log(`📅 Events for ${isoDate}:`, data.items);
                 if (data.items && data.items.length > 0) {
                     return data.items[0].summary.trim();
                 } else {
@@ -67,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return translations[eventTitle] && translations[eventTitle][lang]
             ? translations[eventTitle][lang]
-            : eventTitle || "No info available";
+            : "No Data Available"; // ✅ Fix: If event title is null, return "No Data Available"
     }
 
     function getUpcomingWeekendDates() {
