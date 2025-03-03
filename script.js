@@ -19,8 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    emailjs.init({ publicKey: "yy6VY8fPG-HIw6Hf1" });
-
     const statusElement = document.getElementById("status");
     const weekendStatusElement = document.getElementById("weekend-status");
 
