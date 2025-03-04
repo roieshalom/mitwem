@@ -51,13 +51,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 return null;
             }
 
-            // 🔹 Log every event for debugging
             console.log(`📅 Events for ${isoDate}:`, data.items);
 
-            // ✅ Ensure event filtering is correct
+            // 🔹 Fix: Consider all-day and multi-day events
             const filteredEvents = data.items.filter(event => {
-                const eventStart = event.start?.dateTime || event.start?.date; 
-                return eventStart.startsWith(isoDate);
+                const eventStart = event.start?.dateTime || event.start?.date;
+                const eventEnd = event.end?.dateTime || event.end?.date;
+                
+                if (!eventStart || !eventEnd) return false; 
+
+                const startsToday = eventStart.startsWith(isoDate);
+                const spansToday = (new Date(eventStart) <= date && new Date(eventEnd) > date);
+
+                return startsToday || spansToday;
             });
 
             console.log(`✅ Filtered events for ${isoDate}:`, filteredEvents);
