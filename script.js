@@ -38,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
 
-        // ✅ Ensure the time range covers the full local day
         const timeMin = new Date(date.setHours(0, 1, 0, 0)).toISOString();
         const timeMax = new Date(date.setHours(23, 59, 59, 999)).toISOString();
 
@@ -49,9 +48,8 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`📅 Checking events for ${getLocalISODate(date)}:`, data.items);
 
             if (data.items && data.items.length > 0) {
-                // ✅ Ensure we are only looking at events that **start** on this day
                 const filteredEvents = data.items.filter(event => {
-                    const eventStart = event.start?.dateTime || event.start?.date; // Handle all-day events
+                    const eventStart = event.start?.dateTime || event.start?.date;
                     return eventStart && eventStart.startsWith(getLocalISODate(date));
                 });
 
@@ -96,7 +94,10 @@ document.addEventListener('DOMContentLoaded', function () {
     loadConfig().then(async () => {
         const today = new Date();
         const todayEvent = await fetchEventsForDate(today);
-        statusElement.textContent = translateEvent(todayEvent, userLang) || "No Data Available";
+        const translatedToday = translateEvent(todayEvent, userLang);
+
+        // ✅ Fix: Ensure a fallback message if no data is available
+        statusElement.textContent = translatedToday || "No info available today.";
 
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
         const results = await Promise.all([
