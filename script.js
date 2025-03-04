@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
 
+        const isoDate = getLocalISODate(date);
         const timeMin = new Date(date.setHours(0, 1, 0, 0)).toISOString();
         const timeMax = new Date(date.setHours(23, 59, 59, 999)).toISOString();
 
@@ -45,27 +46,33 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`);
             const data = await response.json();
 
-            console.log(`📅 Checking events for ${getLocalISODate(date)}:`, data.items);
+            console.log(`📅 Checking events for ${isoDate}:`, data.items);
 
-            if (data.items && data.items.length > 0) {
-                // 🔹 Log all event start times to diagnose filtering issues
-                data.items.forEach(event => {
-                    console.log(`🕒 Event Found: ${event.summary} - Starts at:`, event.start?.dateTime || event.start?.date);
-                });
-
-                // ✅ Improved Filtering: Handle All-Day & Repeated Events
-                const filteredEvents = data.items.filter(event => {
-                    const eventStart = event.start?.dateTime || event.start?.date; // Handles both timed & all-day events
-                    const eventStartDate = eventStart.split("T")[0]; // Extract YYYY-MM-DD
-
-                    return eventStartDate === getLocalISODate(date);
-                });
-
-                console.log(`✅ Filtered events for ${getLocalISODate(date)}:`, filteredEvents);
-                return filteredEvents.length > 0 ? filteredEvents[0].summary.trim() : null;
-            } else {
+            if (!data.items || data.items.length === 0) {
+                console.warn(`⚠️ No events found for ${isoDate}`);
                 return null;
             }
+
+            // 🔹 Log every event for debugging
+            data.items.forEach(event => {
+                console.log(`🕒 Event Found: "${event.summary}" - Starts at:`, event.start);
+            });
+
+            // ✅ Improved Filtering: Handle All-Day & Timed Events
+            const filteredEvents = data.items.filter(event => {
+                const eventStart = event.start?.dateTime || event.start?.date; 
+                const eventStartDate = eventStart.split("T")[0];
+
+                const isValid = eventStartDate === isoDate;
+                if (!isValid) {
+                    console.warn(`🚨 Event "${event.summary}" is being excluded! Start Date: ${eventStartDate}, Expected: ${isoDate}`);
+                }
+                return isValid;
+            });
+
+            console.log(`✅ Filtered events for ${isoDate}:`, filteredEvents);
+
+            return filteredEvents.length > 0 ? filteredEvents[0].summary.trim() : null;
         } catch (error) {
             console.error("❌ Error fetching calendar data:", error);
             return null;
@@ -104,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const todayEvent = await fetchEventsForDate(today);
         const translatedToday = translateEvent(todayEvent, userLang);
 
-        // ✅ Fix: Ensure fallback if no valid event found
+        // ✅ Ensure correct fallback if no valid event found
         statusElement.textContent = translatedToday || "No info available today.";
 
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
@@ -120,23 +127,4 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
         if (cleanedResults.every(event => event === null)) {
-            weekendStatusElement.textContent = "This Weekend: No Data Available";
-            return;
-        }
-
-        const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
-
-        let weekendStatus;
-        if (uniqueValues.length === 1) {
-            weekendStatus = translateEvent(uniqueValues[0], userLang);
-        } else {
-            weekendStatus = "Mixed";
-        }
-
-        console.log("✅ Weekend Processed Status:", weekendStatus);
-        weekendStatusElement.textContent = `This Weekend: ${weekendStatus}`;
-    }).catch(error => {
-        console.error("❌ Failed to load config.js:", error);
-        statusElement.textContent = "Failed to load API keys.";
-    });
-});
+            weekendStatusElement.textContent = "Th
