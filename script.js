@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
         if (cleanedResults.every(event => event === null)) {
+            console.log("✅ No events found for the weekend. Setting status to 'No Data Available'.");
             weekendStatusElement.textContent = "This Weekend: No Data Available";
             return;
         }
