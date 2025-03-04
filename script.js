@@ -38,31 +38,28 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
 
-        // ✅ Ensure the time range covers the full 24-hour period
-        const timeMin = `${getLocalISODate(date)}T00:00:00Z`;
-        const timeMax = `${getLocalISODate(date)}T23:59:59Z`;
+        const isoDate = getLocalISODate(date);
+        const timeMin = `${isoDate}T00:00:00Z`;  // Midnight UTC
+        const timeMax = `${isoDate}T23:59:59Z`;  // End of the day UTC
 
         try {
             const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`);
-            
+
             if (!response.ok) {
                 console.error(`❌ API Request Failed with Status: ${response.status}`);
                 return null;
             }
 
             const data = await response.json();
-
-            console.log(`📅 Checking events for ${getLocalISODate(date)}:`, data.items);
+            console.log(`📅 Checking events for ${isoDate}:`, data.items);
 
             if (data.items && data.items.length > 0) {
-                // ✅ Include events that are active on this date
                 const filteredEvents = data.items.filter(event => {
-                    const eventStart = event.start?.dateTime || event.start?.date;
-                    const eventEnd = event.end?.dateTime || event.end?.date;
-                    return eventStart && eventStart.startsWith(getLocalISODate(date));
+                    const eventStart = event.start?.dateTime || event.start?.date; // Handle all-day events
+                    return eventStart && eventStart.startsWith(isoDate);
                 });
 
-                console.log(`✅ Filtered events for ${getLocalISODate(date)}:`, filteredEvents);
+                console.log(`✅ Filtered events for ${isoDate}:`, filteredEvents);
                 return filteredEvents.length > 0 ? filteredEvents[0].summary.trim() : null;
             } else {
                 return null;
