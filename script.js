@@ -54,7 +54,14 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`📅 Checking events for ${isoDate}:`, data.items);
 
             if (data.items && data.items.length > 0) {
-                return data.items[0].summary.trim();
+                // ✅ Filter events that **start exactly on this day**
+                const validEvents = data.items.filter(event => {
+                    const eventStart = event.start?.dateTime || event.start?.date;
+                    return eventStart && eventStart.startsWith(isoDate); // ✅ Only count if event STARTS on this day
+                });
+
+                console.log(`✅ Filtered events for ${isoDate}:`, validEvents);
+                return validEvents.length > 0 ? validEvents[0].summary.trim() : null;
             } else {
                 return null;
             }
@@ -105,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         console.log("📝 Weekend Raw Data (Before Filter):", results);
 
+        // ✅ Filter events to only count those that start on that exact day
         const cleanedResults = results.map(event => event && event.trim() ? event.trim() : null);
         console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
