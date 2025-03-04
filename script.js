@@ -38,22 +38,28 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
 
-        // ✅ Ensure the time range covers the full local day
-        const timeMin = new Date(date.setHours(0, 1, 0, 0)).toISOString();
-        const timeMax = new Date(date.setHours(23, 59, 59, 999)).toISOString();
+        // ✅ Ensure the time range covers the full 24-hour period
+        const timeMin = `${getLocalISODate(date)}T00:00:00Z`;
+        const timeMax = `${getLocalISODate(date)}T23:59:59Z`;
 
         try {
-            const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=false&orderBy=startTime&key=${API_KEY}`);
+            const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`);
+            
+            if (!response.ok) {
+                console.error(`❌ API Request Failed with Status: ${response.status}`);
+                return null;
+            }
+
             const data = await response.json();
 
             console.log(`📅 Checking events for ${getLocalISODate(date)}:`, data.items);
 
             if (data.items && data.items.length > 0) {
-                // ✅ Include events that START on or BEFORE today and END on or AFTER today
+                // ✅ Include events that are active on this date
                 const filteredEvents = data.items.filter(event => {
-                    const eventStart = event.start?.dateTime || event.start?.date; // Handle all-day events
-                    const eventEnd = event.end?.dateTime || event.end?.date; // Handle end dates
-                    return eventStart && eventStart <= getLocalISODate(date) && (!eventEnd || eventEnd > getLocalISODate(date));
+                    const eventStart = event.start?.dateTime || event.start?.date;
+                    const eventEnd = event.end?.dateTime || event.end?.date;
+                    return eventStart && eventStart.startsWith(getLocalISODate(date));
                 });
 
                 console.log(`✅ Filtered events for ${getLocalISODate(date)}:`, filteredEvents);
