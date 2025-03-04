@@ -46,28 +46,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`);
             const data = await response.json();
 
-            console.log(`📅 Checking events for ${isoDate}:`, data.items);
-
             if (!data.items || data.items.length === 0) {
                 console.warn(`⚠️ No events found for ${isoDate}`);
                 return null;
             }
 
             // 🔹 Log every event for debugging
-            data.items.forEach(event => {
-                console.log(`🕒 Event Found: "${event.summary}" - Starts at:`, event.start);
-            });
+            console.log(`📅 Events for ${isoDate}:`, data.items);
 
-            // ✅ Improved Filtering: Handle All-Day & Timed Events
+            // ✅ Ensure event filtering is correct
             const filteredEvents = data.items.filter(event => {
                 const eventStart = event.start?.dateTime || event.start?.date; 
-                const eventStartDate = eventStart.split("T")[0];
-
-                const isValid = eventStartDate === isoDate;
-                if (!isValid) {
-                    console.warn(`🚨 Event "${event.summary}" is being excluded! Start Date: ${eventStartDate}, Expected: ${isoDate}`);
-                }
-                return isValid;
+                return eventStart.startsWith(isoDate);
             });
 
             console.log(`✅ Filtered events for ${isoDate}:`, filteredEvents);
@@ -111,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const todayEvent = await fetchEventsForDate(today);
         const translatedToday = translateEvent(todayEvent, userLang);
 
-        // ✅ Ensure correct fallback if no valid event found
         statusElement.textContent = translatedToday || "No info available today.";
 
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
@@ -127,4 +116,23 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
         if (cleanedResults.every(event => event === null)) {
-            weekendStatusElement.textContent = "Th
+            weekendStatusElement.textContent = "This Weekend: No Data Available";
+            return;
+        }
+
+        const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
+
+        let weekendStatus;
+        if (uniqueValues.length === 1) {
+            weekendStatus = translateEvent(uniqueValues[0], userLang);
+        } else {
+            weekendStatus = "Mixed";
+        }
+
+        console.log("✅ Weekend Processed Status:", weekendStatus);
+        weekendStatusElement.textContent = `This Weekend: ${weekendStatus}`;
+    }).catch(error => {
+        console.error("❌ Failed to load config.js:", error);
+        statusElement.textContent = "Failed to load API keys.";
+    });
+});
