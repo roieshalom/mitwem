@@ -43,16 +43,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const timeMax = new Date(date.setHours(23, 59, 59, 999)).toISOString();
 
         try {
-            const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`);
+            const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=false&orderBy=startTime&key=${API_KEY}`);
             const data = await response.json();
 
             console.log(`📅 Checking events for ${getLocalISODate(date)}:`, data.items);
 
             if (data.items && data.items.length > 0) {
-                // ✅ Ensure we are only looking at events that **start** on this day
+                // ✅ Include events that START on or BEFORE today and END on or AFTER today
                 const filteredEvents = data.items.filter(event => {
                     const eventStart = event.start?.dateTime || event.start?.date; // Handle all-day events
-                    return eventStart && eventStart.startsWith(getLocalISODate(date));
+                    const eventEnd = event.end?.dateTime || event.end?.date; // Handle end dates
+                    return eventStart && eventStart <= getLocalISODate(date) && (!eventEnd || eventEnd > getLocalISODate(date));
                 });
 
                 console.log(`✅ Filtered events for ${getLocalISODate(date)}:`, filteredEvents);
