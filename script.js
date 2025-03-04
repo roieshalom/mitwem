@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
 
-        const isoDate = getLocalISODate(date);
+        // ✅ Ensure the time range covers the full local day
         const timeMin = new Date(date.setHours(0, 1, 0, 0)).toISOString();
         const timeMax = new Date(date.setHours(23, 59, 59, 999)).toISOString();
 
@@ -46,29 +46,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime&key=${API_KEY}`);
             const data = await response.json();
 
-            if (!data.items || data.items.length === 0) {
-                console.warn(`⚠️ No events found for ${isoDate}`);
+            console.log(`📅 Checking events for ${getLocalISODate(date)}:`, data.items);
+
+            if (data.items && data.items.length > 0) {
+                // ✅ Ensure we are only looking at events that **start** on this day
+                const filteredEvents = data.items.filter(event => {
+                    const eventStart = event.start?.dateTime || event.start?.date; // Handle all-day events
+                    return eventStart && eventStart.startsWith(getLocalISODate(date));
+                });
+
+                console.log(`✅ Filtered events for ${getLocalISODate(date)}:`, filteredEvents);
+                return filteredEvents.length > 0 ? filteredEvents[0].summary.trim() : null;
+            } else {
                 return null;
             }
-
-            console.log(`📅 Events for ${isoDate}:`, data.items);
-
-            // 🔹 Fix: Consider all-day and multi-day events
-            const filteredEvents = data.items.filter(event => {
-                const eventStart = event.start?.dateTime || event.start?.date;
-                const eventEnd = event.end?.dateTime || event.end?.date;
-                
-                if (!eventStart || !eventEnd) return false; 
-
-                const startsToday = eventStart.startsWith(isoDate);
-                const spansToday = (new Date(eventStart) <= date && new Date(eventEnd) > date);
-
-                return startsToday || spansToday;
-            });
-
-            console.log(`✅ Filtered events for ${isoDate}:`, filteredEvents);
-
-            return filteredEvents.length > 0 ? filteredEvents[0].summary.trim() : null;
         } catch (error) {
             console.error("❌ Error fetching calendar data:", error);
             return null;
@@ -105,9 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loadConfig().then(async () => {
         const today = new Date();
         const todayEvent = await fetchEventsForDate(today);
-        const translatedToday = translateEvent(todayEvent, userLang);
-
-        statusElement.textContent = translatedToday || "No info available today.";
+        statusElement.textContent = translateEvent(todayEvent, userLang) || "No Data Available";
 
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
         const results = await Promise.all([
