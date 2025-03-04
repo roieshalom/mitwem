@@ -48,9 +48,17 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`📅 Checking events for ${getLocalISODate(date)}:`, data.items);
 
             if (data.items && data.items.length > 0) {
+                // 🔹 Log all event start times to diagnose filtering issues
+                data.items.forEach(event => {
+                    console.log(`🕒 Event Found: ${event.summary} - Starts at:`, event.start?.dateTime || event.start?.date);
+                });
+
+                // ✅ Improved Filtering: Handle All-Day & Repeated Events
                 const filteredEvents = data.items.filter(event => {
-                    const eventStart = event.start?.dateTime || event.start?.date;
-                    return eventStart && eventStart.startsWith(getLocalISODate(date));
+                    const eventStart = event.start?.dateTime || event.start?.date; // Handles both timed & all-day events
+                    const eventStartDate = eventStart.split("T")[0]; // Extract YYYY-MM-DD
+
+                    return eventStartDate === getLocalISODate(date);
                 });
 
                 console.log(`✅ Filtered events for ${getLocalISODate(date)}:`, filteredEvents);
@@ -96,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const todayEvent = await fetchEventsForDate(today);
         const translatedToday = translateEvent(todayEvent, userLang);
 
-        // ✅ Fix: Ensure a fallback message if no data is available
+        // ✅ Fix: Ensure fallback if no valid event found
         statusElement.textContent = translatedToday || "No info available today.";
 
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
@@ -132,4 +140,3 @@ document.addEventListener('DOMContentLoaded', function () {
         statusElement.textContent = "Failed to load API keys.";
     });
 });
-
