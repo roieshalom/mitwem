@@ -37,29 +37,29 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error("❌ API keys are not loaded!");
             return null;
         }
-
+    
         const isoDate = getLocalISODate(date);
         const timeMin = `${isoDate}T00:00:00Z`;  
         const timeMax = `${isoDate}T23:59:59Z`;  
-
+    
         try {
             const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&key=${API_KEY}`);
-
+    
             if (!response.ok) {
                 console.error(`❌ API Request Failed with Status: ${response.status}`);
                 return null;
             }
-
+    
             const data = await response.json();
             console.log(`📅 Checking events for ${isoDate}:`, data.items);
-
+    
             if (data.items && data.items.length > 0) {
-                // ✅ Filter events that **start exactly on this day**
+                // ✅ FIX: Handle both all-day and timed events
                 const validEvents = data.items.filter(event => {
-                    const eventStart = event.start?.dateTime || event.start?.date;
-                    return eventStart && eventStart.startsWith(isoDate); // ✅ Only count if event STARTS on this day
+                    const eventStart = event.start?.dateTime || event.start?.date; // Handle all-day events
+                    return eventStart && eventStart.startsWith(isoDate); // Match exact date
                 });
-
+    
                 console.log(`✅ Filtered events for ${isoDate}:`, validEvents);
                 return validEvents.length > 0 ? validEvents[0].summary.trim() : null;
             } else {
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return null;
         }
     }
-
+    
     function translateEvent(eventTitle, lang) {
         const translations = {
             'Roie': { 'en': 'With Dad', 'de': 'Mit Papa', 'he': 'עם אבא' },
