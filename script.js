@@ -54,11 +54,15 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`📅 Checking events for ${isoDate}:`, data.items);
 
             if (data.items && data.items.length > 0) {
-                // ✅ Fix: Ensure correct filtering of all-day and timed events
+                // ✅ FIX: Handle all-day events & multi-day events
                 const validEvents = data.items.filter(event => {
-                    if (!event.start) return false;
-                    const eventStart = event.start.dateTime || event.start.date; // Handle both cases
-                    return eventStart.startsWith(isoDate); // Match exact date
+                    const eventStart = event.start?.dateTime || event.start?.date; 
+                    const eventEnd = event.end?.dateTime || event.end?.date;
+
+                    if (!eventStart) return false; // Ignore broken data
+
+                    // ✅ Check if the event spans across today
+                    return (eventStart <= isoDate && (!eventEnd || eventEnd >= isoDate));
                 });
 
                 console.log(`✅ Filtered events for ${isoDate}:`, validEvents);
