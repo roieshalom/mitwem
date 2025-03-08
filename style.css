@@ -1,0 +1,139 @@
+/* General page styles */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: rgb(60, 11, 84);
+    background-size: 400% 400%;
+    animation: gradientMove 8s ease infinite;
+    color: white;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body.rtl {
+    direction: rtl;
+}
+
+/* Content wrapper */
+.content {
+    padding-top: 10vh;
+    padding-bottom: 20vh;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* Heading styles */
+h1 {
+    color: white;
+    font-size: 28px;
+    margin: 0;
+    margin-top: 80px;
+}
+
+/* Status message */
+#status {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 2vh 0;
+    display: inline-block;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Weekend status */
+#weekend-status {
+    font-size: 24px;
+    font-weight: normal;
+    margin: -2vh 0;
+    display: inline-block;
+    color: white;
+    padding: 0;
+}
+
+/* Footer */
+footer#footer {
+    font-size: 18px;
+    color: white;
+    padding: 20vh 0;
+    width: 100%;
+    text-align: center;
+    opacity: 0.7;
+    background: none;
+    position: relative;
+    direction: ltr;
+    text-align: center;
+    margin-top: auto;
+}
+
+/* ✨ Hover Effect */
+#status:hover {
+    transform: scale(1.2) rotate(3deg);
+    color: white;
+    background: linear-gradient(45deg, #ff33cc, #ff66ff, #ff99ff);
+    background-size: 200% 200%;
+    animation: gradientHover 2s ease infinite;
+    text-shadow: 0px 0px 15px rgba(255, 255, 255, 1);
+    cursor: pointer;
+}
+
+/* ✅ Smooth Background Animation */
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ✅ Hover Animation */
+@keyframes gradientHover {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* RTL Fix */
+.rtl {
+    direction: rtl;
+    unicode-bidi: embed;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 22px;
+    }
+
+    #status {
+        font-size: 24px;
+        padding: 15px;
+    }
+
+    #weekend-status {
+        font-size: 20px;
+    }
+
+    footer#footer {
+        font-size: 16px;
+        padding: 20vh 0;
+        position: relative;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+    .content {
+        padding-top: 10vh;
+        padding-bottom: 20vh;
+    }
+} 
