@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function applyTranslations() {
-        if (!translations || !translations.pageTitle) {
+        if (typeof translations === "undefined" || !translations.pageTitle) {
             console.error("❌ Translations not loaded correctly.");
             return;
         }
@@ -64,7 +64,9 @@ document.addEventListener('DOMContentLoaded', function () {
         weekendStatusElement.textContent = translations.loadingWeekend[userLang];
 
         // ✅ Translate "On" text before the date picker
-        document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
+        if (document.querySelector(".date-picker-container span")) {
+            document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
+        }
 
         // ✅ Default text for date selection
         selectedDateStatus.textContent = translations.noData[userLang];
@@ -77,6 +79,22 @@ document.addEventListener('DOMContentLoaded', function () {
     function isWeekend(date) {
         const day = date.getDay();
         return day === 5 || day === 6 || day === 0;
+    }
+
+    function getUpcomingWeekendDates() {
+        const today = new Date();
+        const daysUntilFriday = (5 - today.getDay() + 7) % 7;
+
+        const friday = new Date(today);
+        friday.setDate(today.getDate() + daysUntilFriday);
+
+        const saturday = new Date(friday);
+        saturday.setDate(friday.getDate() + 1);
+
+        const sunday = new Date(saturday);
+        sunday.setDate(saturday.getDate() + 1);
+
+        return { friday, saturday, sunday };
     }
 
     async function fetchEventsForDate(date) {
