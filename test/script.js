@@ -9,12 +9,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typeof CONFIG !== 'undefined' && CONFIG.CALENDAR_ID && CONFIG.API_KEY) {
                     CALENDAR_ID = CONFIG.CALENDAR_ID;
                     API_KEY = CONFIG.API_KEY;
+                    console.log(`✅ Config loaded: CALENDAR_ID=${CALENDAR_ID}, API_KEY=${API_KEY}`);
                     resolve();
                 } else {
+                    console.error("❌ CONFIG is undefined or missing keys!");
                     reject("CONFIG is undefined or missing keys!");
                 }
             };
-            script.onerror = () => reject("Failed to load config.js");
+            script.onerror = () => {
+                console.error("❌ Failed to load config.js");
+                reject("Failed to load config.js");
+            };
             document.head.appendChild(script);
         });
     }
@@ -27,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typeof translations !== 'undefined') {
                     resolve();
                 } else {
+                    console.error("❌ Translations file is missing or incorrect.");
                     reject("Translations file is missing or incorrect.");
                 }
             };
@@ -41,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let userLang = navigator.language.startsWith("de") ? "de" :
                    navigator.language.startsWith("he") ? "he" : "en";
 
-    // ✅ Apply RTL class if Hebrew is detected
     if (userLang === "he") {
         document.body.classList.add("rtl");
     } else {
@@ -66,12 +71,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function isWeekend(date) {
         const day = date.getDay();
-        return day === 5 || day === 6 || day === 0; // Friday, Saturday, Sunday
+        return day === 5 || day === 6 || day === 0;
     }
 
     async function fetchEventsForDate(date) {
         if (!CALENDAR_ID || !API_KEY) {
-            console.error("❌ API keys are not loaded!");
+            console.error("❌ API keys are not loaded! Stopping API request.");
             return null;
         }
 
@@ -80,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const timeMax = `${isoDate}T23:59:59Z`;  
 
         try {
+            console.log(`🔍 Fetching events for ${isoDate}...`);
             const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&key=${API_KEY}`);
 
             if (!response.ok) {
@@ -88,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             const data = await response.json();
-            console.log(`📅 Checking events for ${isoDate}:`, data.items);
+            console.log(`📅 API Response for ${isoDate}:`, data);
 
             if (data.items && data.items.length > 0) {
                 const validEvents = data.items.filter(event => {
@@ -100,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log(`✅ Filtered events for ${isoDate}:`, validEvents);
                 return validEvents.length > 0 ? validEvents[0].summary.trim() : null;
             } else {
+                console.log(`ℹ️ No events found for ${isoDate}`);
                 return null;
             }
         } catch (error) {
