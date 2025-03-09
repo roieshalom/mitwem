@@ -19,14 +19,39 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function loadTranslations() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = "translations.js";
+            script.onload = () => {
+                if (typeof translations !== 'undefined') {
+                    resolve();
+                } else {
+                    reject("Translations file is missing or incorrect.");
+                }
+            };
+            script.onerror = () => reject("Failed to load translations.js");
+            document.head.appendChild(script);
+        });
+    }
+
     const statusElement = document.getElementById("status");
     const weekendStatusElement = document.getElementById("weekend-status");
 
-    const userLang = navigator.language.startsWith("de") ? "de" :
-                     navigator.language.startsWith("he") ? "he" : "en";
+    let userLang = navigator.language.startsWith("de") ? "de" :
+                   navigator.language.startsWith("he") ? "he" : "en";
 
-    statusElement.textContent = "Loading...";
-    weekendStatusElement.textContent = "Loading weekend info...";
+    function applyTranslations() {
+        if (!translations || !translations.pageTitle) {
+            console.error("❌ Translations not loaded correctly.");
+            return;
+        }
+
+        document.title = translations.pageTitle[userLang];
+        document.getElementById("page-heading").textContent = translations.pageHeading[userLang];
+        statusElement.textContent = translations.loading[userLang];
+        weekendStatusElement.textContent = translations.loadingWeekend[userLang];
+    }
 
     function getLocalISODate(date) {
         return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split("T")[0];
@@ -77,14 +102,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function translateEvent(eventTitle, lang, isEntireWeekend) {
-        const translations = {
-            'Roie': { 'en': 'With Dad', 'de': 'Mit Papa', 'he': 'עם אבא' },
-            'Anat': { 'en': 'With Mom', 'de': 'Mit Mama', 'he': 'עם אמא' }
-        };
+        if (!translations || !translations.events) return "No Data Available";
 
-        let translatedText = translations[eventTitle] && translations[eventTitle][lang] ? translations[eventTitle][lang] : null;
-        if (isEntireWeekend && translatedText) {
-            translatedText += " (entire weekend)";
+        let translatedText = translations.events[eventTitle] && translations.events[eventTitle][lang] 
+            ? translations.events[eventTitle][lang] 
+            : translations.noData[lang];
+
+        if (isEntireWeekend && translatedText !== translations.noData[lang]) {
+            translatedText += ` (${translations.entireWeekend[lang]})`;
         }
         return translatedText;
     }
@@ -105,44 +130,47 @@ document.addEventListener('DOMContentLoaded', function () {
         return { friday, saturday, sunday };
     }
 
-    loadConfig().then(async () => {
-        const today = new Date();
-        const isWeekendToday = isWeekend(today);
-        const todayEvent = await fetchEventsForDate(today);
-        statusElement.textContent = translateEvent(todayEvent, userLang, isWeekendToday) || "No Data Available";
+    Promise.all([loadConfig(), loadTranslations()])
+        .then(async () => {
+            applyTranslations();
 
-        const { friday, saturday, sunday } = getUpcomingWeekendDates();
-        const results = await Promise.all([
-            fetchEventsForDate(friday),
-            fetchEventsForDate(saturday),
-            fetchEventsForDate(sunday)
-        ]);
+            const today = new Date();
+            const isWeekendToday = isWeekend(today);
+            const todayEvent = await fetchEventsForDate(today);
+            statusElement.textContent = translateEvent(todayEvent, userLang, isWeekendToday);
 
-        console.log("📝 Weekend Raw Data (Before Filter):", results);
+            const { friday, saturday, sunday } = getUpcomingWeekendDates();
+            const results = await Promise.all([
+                fetchEventsForDate(friday),
+                fetchEventsForDate(saturday),
+                fetchEventsForDate(sunday)
+            ]);
 
-        const cleanedResults = results.map(event => event && event.trim() ? event.trim() : null);
-        console.log("🧹 Cleaned Weekend Data:", cleanedResults);
+            console.log("📝 Weekend Raw Data (Before Filter):", results);
 
-        if (cleanedResults.every(event => event === null)) {
-            console.log("✅ No events found for the weekend. Setting status to 'No Data Available'.");
-            weekendStatusElement.textContent = "Next Weekend: No Data Available";
-            return;
-        }
+            const cleanedResults = results.map(event => event && event.trim() ? event.trim() : null);
+            console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
-        const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
+            if (cleanedResults.every(event => event === null)) {
+                console.log("✅ No events found for the weekend.");
+                weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${translations.noData[userLang]}`;
+                return;
+            }
 
-        let weekendStatus;
-        if (uniqueValues.length === 1) {
-            weekendStatus = translateEvent(uniqueValues[0], userLang, false);
-        } else {
-            weekendStatus = "Mixed";
-        }
+            const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
 
-        console.log("✅ Weekend Processed Status:", weekendStatus);
-        weekendStatusElement.textContent = `Next Weekend: ${weekendStatus}`;
-    }).catch(error => {
-        console.error("❌ Failed to load config.js:", error);
-        statusElement.textContent = "Failed to load API keys.";
-    });
+            let weekendStatus;
+            if (uniqueValues.length === 1) {
+                weekendStatus = translateEvent(uniqueValues[0], userLang, false);
+            } else {
+                weekendStatus = translations.mixed[userLang];
+            }
+
+            console.log("✅ Weekend Processed Status:", weekendStatus);
+            weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
+        })
+        .catch(error => {
+            console.error("❌ Failed to load dependencies:", error);
+            statusElement.textContent = translations.failedLoad[userLang] || "Failed to load data.";
+        });
 });
-
