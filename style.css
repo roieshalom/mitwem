@@ -19,6 +19,7 @@ body {
 
 body.rtl {
     direction: rtl;
+    text-align: right;
 }
 
 /* Content wrapper */
@@ -60,6 +61,54 @@ h1 {
     display: inline-block;
     color: white;
     padding: 0;
+}
+
+/* ✅ RTL Fix for Text Alignment */
+.rtl h1, 
+.rtl #status, 
+.rtl #weekend-status, 
+.rtl #selected-date-status {
+    text-align: right;
+}
+
+/* ✅ Ensure question marks and punctuation align correctly */
+.rtl p, 
+.rtl span {
+    direction: rtl;
+    unicode-bidi: embed;
+}
+
+/* ✅ Adjust date picker section for RTL */
+.rtl .date-picker-container {
+    flex-direction: row-reverse; /* Ensures the date picker aligns correctly */
+}
+
+/* ✅ Divider Below "Next Weekend" Section */
+.divider {
+    width: 80%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 20px auto;
+    border: none;
+}
+
+/* ✅ Inline Layout for Date Picker Section */
+.date-picker-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Adds spacing between elements */
+    font-size: 24px; /* Match "With Mom" text size */
+    color: white;
+}
+
+/* ✅ Style the Date Picker */
+.date-picker-container input[type="date"] {
+    font-size: 20px;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
 }
 
 /* Footer */
@@ -136,4 +185,12 @@ footer#footer {
         padding-top: 10vh;
         padding-bottom: 20vh;
     }
-} 
+
+    .date-picker-container {
+        font-size: 20px;
+    }
+
+    .date-picker-container input[type="date"] {
+        font-size: 18px;
+    }
+}
