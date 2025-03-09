@@ -44,6 +44,11 @@ const translations = {
         de: "Daten konnten nicht geladen werden.",
         he: "טעינת הנתונים נכשלה."
     },
+    onDate: {
+        en: "On",
+        de: "Am",
+        he: "בתאריך"
+    },
     events: {
         "Roie": { en: "With Dad", de: "Mit Papa", he: "עם אבא" },
         "Anat": { en: "With Mom", de: "Mit Mama", he: "עם אמא" }
