@@ -32,6 +32,11 @@ document.addEventListener('DOMContentLoaded', function () {
         return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split("T")[0];
     }
 
+    function isWeekend(date) {
+        const day = date.getDay();
+        return day === 5 || day === 6 || day === 0; // Friday, Saturday, Sunday
+    }
+
     async function fetchEventsForDate(date) {
         if (!CALENDAR_ID || !API_KEY) {
             console.error("❌ API keys are not loaded!");
@@ -54,14 +59,9 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`📅 Checking events for ${isoDate}:`, data.items);
 
             if (data.items && data.items.length > 0) {
-                // ✅ FIX: Handle all-day events & multi-day events
                 const validEvents = data.items.filter(event => {
                     const eventStart = event.start?.dateTime || event.start?.date; 
                     const eventEnd = event.end?.dateTime || event.end?.date;
-
-                    if (!eventStart) return false; // Ignore broken data
-
-                    // ✅ Check if the event spans across today
                     return (eventStart <= isoDate && (!eventEnd || eventEnd >= isoDate));
                 });
 
@@ -76,15 +76,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function translateEvent(eventTitle, lang) {
+    function translateEvent(eventTitle, lang, isEntireWeekend) {
         const translations = {
             'Roie': { 'en': 'With Dad', 'de': 'Mit Papa', 'he': 'עם אבא' },
             'Anat': { 'en': 'With Mom', 'de': 'Mit Mama', 'he': 'עם אמא' }
         };
 
-        return translations[eventTitle] && translations[eventTitle][lang]
-            ? translations[eventTitle][lang]
-            : null;
+        let translatedText = translations[eventTitle] && translations[eventTitle][lang] ? translations[eventTitle][lang] : null;
+        if (isEntireWeekend && translatedText) {
+            translatedText += " (entire weekend)";
+        }
+        return translatedText;
     }
 
     function getUpcomingWeekendDates() {
@@ -105,8 +107,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadConfig().then(async () => {
         const today = new Date();
+        const isWeekendToday = isWeekend(today);
         const todayEvent = await fetchEventsForDate(today);
-        statusElement.textContent = translateEvent(todayEvent, userLang) || "No Data Available";
+        statusElement.textContent = translateEvent(todayEvent, userLang, isWeekendToday) || "No Data Available";
 
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
         const results = await Promise.all([
@@ -117,13 +120,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         console.log("📝 Weekend Raw Data (Before Filter):", results);
 
-        // ✅ Fix: Ensure correct filtering and ignore null/empty values
         const cleanedResults = results.map(event => event && event.trim() ? event.trim() : null);
         console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
         if (cleanedResults.every(event => event === null)) {
             console.log("✅ No events found for the weekend. Setting status to 'No Data Available'.");
-            weekendStatusElement.textContent = "This Weekend: No Data Available";
+            weekendStatusElement.textContent = "Next Weekend: No Data Available";
             return;
         }
 
@@ -131,13 +133,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let weekendStatus;
         if (uniqueValues.length === 1) {
-            weekendStatus = translateEvent(uniqueValues[0], userLang);
+            weekendStatus = translateEvent(uniqueValues[0], userLang, false);
         } else {
             weekendStatus = "Mixed";
         }
 
         console.log("✅ Weekend Processed Status:", weekendStatus);
-        weekendStatusElement.textContent = `This Weekend: ${weekendStatus}`;
+        weekendStatusElement.textContent = `Next Weekend: ${weekendStatus}`;
     }).catch(error => {
         console.error("❌ Failed to load config.js:", error);
         statusElement.textContent = "Failed to load API keys.";
