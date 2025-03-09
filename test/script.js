@@ -16,10 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     reject("CONFIG is undefined or missing keys!");
                 }
             };
-            script.onerror = () => {
-                console.error("❌ Failed to load config.js");
-                reject("Failed to load config.js");
-            };
+            script.onerror = () => reject("❌ Failed to load config.js");
             document.head.appendChild(script);
         });
     }
@@ -76,20 +73,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchEventsForDate(date) {
         if (!CALENDAR_ID || !API_KEY) {
-            console.error("❌ API keys are not loaded! Stopping API request.");
+            console.error("❌ API keys are missing, stopping request.");
             return null;
         }
 
         const isoDate = getLocalISODate(date);
         const timeMin = `${isoDate}T00:00:00Z`;  
-        const timeMax = `${isoDate}T23:59:59Z`;  
+        const timeMax = `${isoDate}T23:59:59Z`;
+
+        console.log(`📡 Fetching events for: ${isoDate}`);
 
         try {
-            console.log(`🔍 Fetching events for ${isoDate}...`);
             const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&key=${API_KEY}`);
 
             if (!response.ok) {
-                console.error(`❌ API Request Failed with Status: ${response.status}`);
+                console.error(`❌ API Request Failed: ${response.status} - ${response.statusText}`);
                 return null;
             }
 
@@ -97,14 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`📅 API Response for ${isoDate}:`, data);
 
             if (data.items && data.items.length > 0) {
-                const validEvents = data.items.filter(event => {
-                    const eventStart = event.start?.dateTime || event.start?.date; 
-                    const eventEnd = event.end?.dateTime || event.end?.date;
-                    return (eventStart <= isoDate && (!eventEnd || eventEnd >= isoDate));
-                });
-
-                console.log(`✅ Filtered events for ${isoDate}:`, validEvents);
-                return validEvents.length > 0 ? validEvents[0].summary.trim() : null;
+                console.log(`✅ Found ${data.items.length} event(s) for ${isoDate}`);
+                return data.items.map(event => event.summary.trim());
             } else {
                 console.log(`ℹ️ No events found for ${isoDate}`);
                 return null;
@@ -149,9 +141,15 @@ document.addEventListener('DOMContentLoaded', function () {
             applyTranslations();
 
             const today = new Date();
-            const isWeekendToday = isWeekend(today);
+            console.log("🔍 Checking events for today...");
             const todayEvent = await fetchEventsForDate(today);
-            statusElement.textContent = translateEvent(todayEvent, userLang, isWeekendToday);
+            console.log("📊 Today’s events:", todayEvent);
+
+            if (todayEvent) {
+                statusElement.textContent = translateEvent(todayEvent[0], userLang, isWeekend(today));
+            } else {
+                statusElement.textContent = translations.noData[userLang];
+            }
 
             const { friday, saturday, sunday } = getUpcomingWeekendDates();
             const results = await Promise.all([
@@ -162,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             console.log("📝 Weekend Raw Data (Before Filter):", results);
 
-            const cleanedResults = results.map(event => event && event.trim() ? event.trim() : null);
+            const cleanedResults = results.map(event => event && event[0] && event[0].trim() ? event[0].trim() : null);
             console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
             if (cleanedResults.every(event => event === null)) {
