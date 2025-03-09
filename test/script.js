@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const statusElement = document.getElementById("status");
     const weekendStatusElement = document.getElementById("weekend-status");
+    const datePicker = document.getElementById("date-picker");
+    const selectedDateStatus = document.getElementById("selected-date-status");
 
     const userLang = navigator.language.startsWith("de") ? "de" :
                      navigator.language.startsWith("he") ? "he" : "en";
@@ -105,6 +107,23 @@ document.addEventListener('DOMContentLoaded', function () {
         return { friday, saturday, sunday };
     }
 
+    async function updateSelectedDateStatus(selectedDate) {
+        if (!selectedDate) return;
+
+        const date = new Date(selectedDate);
+        const isWeekendDate = isWeekend(date);
+        const event = await fetchEventsForDate(date);
+        
+        selectedDateStatus.textContent = event 
+            ? translateEvent(event, userLang, isWeekendDate) 
+            : "No Data Available";
+    }
+
+    // Listen for date picker changes
+    datePicker.addEventListener("change", (event) => {
+        updateSelectedDateStatus(event.target.value);
+    });
+
     loadConfig().then(async () => {
         const today = new Date();
         const isWeekendToday = isWeekend(today);
@@ -145,4 +164,3 @@ document.addEventListener('DOMContentLoaded', function () {
         statusElement.textContent = "Failed to load API keys.";
     });
 });
-
