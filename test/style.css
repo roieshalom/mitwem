@@ -9,7 +9,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    background:brown;
+    background: linear-gradient(135deg, #ff69b4, #ff99cc, #ffa6f6, #e066ff);
     background-size: 400% 400%;
     animation: gradientMove 8s ease infinite;
     color: white;
