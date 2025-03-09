@@ -41,6 +41,13 @@ document.addEventListener('DOMContentLoaded', function () {
     let userLang = navigator.language.startsWith("de") ? "de" :
                    navigator.language.startsWith("he") ? "he" : "en";
 
+    // ✅ Apply RTL class if Hebrew is detected
+    if (userLang === "he") {
+        document.body.classList.add("rtl");
+    } else {
+        document.body.classList.remove("rtl");
+    }
+
     function applyTranslations() {
         if (!translations || !translations.pageTitle) {
             console.error("❌ Translations not loaded correctly.");

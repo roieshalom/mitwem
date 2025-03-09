@@ -17,6 +17,7 @@ body {
     overflow-y: auto;
 }
 
+/* ✅ Full RTL support when Hebrew is detected */
 body.rtl {
     direction: rtl;
     text-align: right;
@@ -67,7 +68,9 @@ h1 {
 .rtl h1, 
 .rtl #status, 
 .rtl #weekend-status, 
-.rtl #selected-date-status {
+.rtl #selected-date-status, 
+.rtl p, 
+.rtl span {
     text-align: right;
 }
 
@@ -75,12 +78,18 @@ h1 {
 .rtl p, 
 .rtl span {
     direction: rtl;
-    unicode-bidi: embed;
+    unicode-bidi: bidi-override;
 }
 
 /* ✅ Adjust date picker section for RTL */
 .rtl .date-picker-container {
-    flex-direction: row-reverse; /* Ensures the date picker aligns correctly */
+    flex-direction: row-reverse;
+}
+
+/* ✅ Fix input text direction inside date picker */
+.rtl input[type="date"] {
+    direction: rtl;
+    text-align: right;
 }
 
 /* ✅ Divider Below "Next Weekend" Section */
@@ -151,7 +160,7 @@ footer#footer {
     100% { background-position: 0% 50%; }
 }
 
-/* RTL Fix */
+/* ✅ RTL Fix (Ensures the entire document follows RTL rules when needed) */
 .rtl {
     direction: rtl;
     unicode-bidi: embed;
@@ -192,5 +201,13 @@ footer#footer {
 
     .date-picker-container input[type="date"] {
         font-size: 18px;
+    }
+
+    /* ✅ Make sure RTL alignment works on mobile */
+    .rtl h1, 
+    .rtl #status, 
+    .rtl #weekend-status, 
+    .rtl #selected-date-status {
+        text-align: right;
     }
 }
