@@ -9,7 +9,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    background: green;
+    background:brown;
     background-size: 400% 400%;
     animation: gradientMove 8s ease infinite;
     color: white;
