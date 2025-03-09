@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const statusElement = document.getElementById("status");
     const weekendStatusElement = document.getElementById("weekend-status");
+    const datePicker = document.getElementById("date-picker");
+    const selectedDateStatus = document.getElementById("selected-date-status");
 
     let userLang = navigator.language.startsWith("de") ? "de" :
                    navigator.language.startsWith("he") ? "he" : "en";
@@ -60,6 +62,12 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("page-heading").textContent = translations.pageHeading[userLang];
         statusElement.textContent = translations.loading[userLang];
         weekendStatusElement.textContent = translations.loadingWeekend[userLang];
+
+        // ✅ Translate "On" text before the date picker
+        document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
+
+        // ✅ Default text for date selection
+        selectedDateStatus.textContent = translations.noData[userLang];
     }
 
     function getLocalISODate(date) {
@@ -108,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function translateEvent(eventTitle, lang, isEntireWeekend) {
-        if (!translations || !translations.events) return "No Data Available";
+        if (!translations || !translations.events) return translations.noData[lang];
 
         let translatedText = translations.events[eventTitle] && translations.events[eventTitle][lang] 
             ? translations.events[eventTitle][lang] 
@@ -120,21 +128,23 @@ document.addEventListener('DOMContentLoaded', function () {
         return translatedText;
     }
 
-    function getUpcomingWeekendDates() {
-        const today = new Date();
-        const daysUntilFriday = (5 - today.getDay() + 7) % 7;
+    async function updateSelectedDateStatus(selectedDate) {
+        if (!selectedDate) return;
 
-        const friday = new Date(today);
-        friday.setDate(today.getDate() + daysUntilFriday);
-
-        const saturday = new Date(friday);
-        saturday.setDate(friday.getDate() + 1);
-
-        const sunday = new Date(saturday);
-        sunday.setDate(saturday.getDate() + 1);
-
-        return { friday, saturday, sunday };
+        const date = new Date(selectedDate);
+        const isWeekendDate = isWeekend(date);
+        const event = await fetchEventsForDate(date);
+        
+        selectedDateStatus.textContent = event 
+            ? translateEvent(event[0], userLang, isWeekendDate) 
+            : translations.noData[userLang];
     }
+
+    // ✅ Listen for date picker changes
+    datePicker.addEventListener("change", (event) => {
+        console.log(`📅 Selected Date: ${event.target.value}`);
+        updateSelectedDateStatus(event.target.value);
+    });
 
     Promise.all([loadConfig(), loadTranslations()])
         .then(async () => {
