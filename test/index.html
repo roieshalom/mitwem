@@ -15,13 +15,15 @@
     <p id="weekend-status">Loading weekend info...</p>
 
     <!-- 🔽 Divider Below Weekend Section -->
-    <hr>
+    <hr class="divider">
 
-    <!-- 📅 Future Date Picker Section -->
+    <!-- 📅 Future Date Picker Section (Inline Layout) -->
     <section id="date-picker-section">
-        <h2>Select a Date</h2>
-        <input type="date" id="date-picker">
-        <p id="selected-date-status">Select a date to see the schedule.</p>
+        <div class="date-picker-container">
+            <span>On</span>
+            <input type="date" id="date-picker">
+            <span id="selected-date-status">No data or not decided yet</span>
+        </div>
     </section>
 
     <footer id="footer">

@@ -84,9 +84,9 @@ document.addEventListener('DOMContentLoaded', function () {
             'Anat': { 'en': 'With Mom', 'de': 'Mit Mama', 'he': 'עם אמא' }
         };
 
-        let translatedText = translations[eventTitle] && translations[eventTitle][lang] ? translations[eventTitle][lang] : null;
-        if (isEntireWeekend && translatedText) {
-            translatedText += " (entire weekend)";
+        let translatedText = translations[eventTitle] && translations[eventTitle][lang] ? translations[eventTitle][lang] : "No data or not decided yet";
+        if (isEntireWeekend && translatedText !== "No data or not decided yet") {
+            translatedText += ` (${translations.entireWeekend[lang]})`;
         }
         return translatedText;
     }
@@ -116,7 +116,11 @@ document.addEventListener('DOMContentLoaded', function () {
         
         selectedDateStatus.textContent = event 
             ? translateEvent(event, userLang, isWeekendDate) 
-            : "No Data Available";
+            : "No data or not decided yet";
+
+        // Apply same style as existing "With Mom/Dad" text
+        selectedDateStatus.style.fontSize = "24px";
+        selectedDateStatus.style.color = "white";
     }
 
     // Listen for date picker changes
@@ -128,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const today = new Date();
         const isWeekendToday = isWeekend(today);
         const todayEvent = await fetchEventsForDate(today);
-        statusElement.textContent = translateEvent(todayEvent, userLang, isWeekendToday) || "No Data Available";
+        statusElement.textContent = translateEvent(todayEvent, userLang, isWeekendToday) || "No data or not decided yet";
 
         const { friday, saturday, sunday } = getUpcomingWeekendDates();
         const results = await Promise.all([
@@ -143,8 +147,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("🧹 Cleaned Weekend Data:", cleanedResults);
 
         if (cleanedResults.every(event => event === null)) {
-            console.log("✅ No events found for the weekend. Setting status to 'No Data Available'.");
-            weekendStatusElement.textContent = "Next Weekend: No Data Available";
+            console.log("✅ No events found for the weekend. Setting status to 'No data or not decided yet'.");
+            weekendStatusElement.textContent = "Next Weekend: No data or not decided yet";
             return;
         }
 
