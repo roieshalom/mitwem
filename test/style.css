@@ -1,6 +1,6 @@
 /* General page styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Heebo', Arial, sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;
@@ -107,17 +107,24 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 10px; /* Adds spacing between elements */
-    font-size: 24px; /* Match "With Mom" text size */
+    font-size: 18px; /* ✅ Reduced text size */
     color: white;
 }
 
 /* ✅ Style the Date Picker */
 .date-picker-container input[type="date"] {
-    font-size: 20px;
+    font-size: 16px; /* ✅ Reduced text size */
     padding: 5px;
     border-radius: 5px;
     border: none;
     outline: none;
+    background-color: rgba(255, 255, 255, 0.7); /* ✅ Faded background */
+    color: #333;
+}
+
+/* 🎨 Date Picker Hover Effect */
+.date-picker-container input[type="date"]:hover {
+    background-color: rgba(255, 255, 255, 0.85);
 }
 
 /* Footer */
@@ -196,11 +203,11 @@ footer#footer {
     }
 
     .date-picker-container {
-        font-size: 20px;
+        font-size: 16px;
     }
 
     .date-picker-container input[type="date"] {
-        font-size: 18px;
+        font-size: 14px;
     }
 
     /* ✅ Make sure RTL alignment works on mobile */
