@@ -84,12 +84,25 @@ h1 {
 /* ✅ Adjust date picker section for RTL */
 .rtl .date-picker-container {
     flex-direction: row-reverse;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* ✅ Ensures proper alignment */
+    gap: 10px;
 }
 
 /* ✅ Fix input text direction inside date picker */
 .rtl input[type="date"] {
     direction: rtl;
     text-align: right;
+}
+
+/* ✅ Ensures the correct word order in RTL mode */
+.rtl .date-picker-container span {
+    order: 1; /* Moves the text properly */
+}
+
+.rtl .date-picker-container input[type="date"] {
+    order: 2; /* Ensures the date picker is between the words */
 }
 
 /* ✅ Divider Below "Next Weekend" Section */
@@ -131,11 +144,6 @@ h1 {
 .rtl .date-picker-container input[type="date"] {
     direction: rtl;
     text-align: right;
-}
-
-/* 🎨 Date Picker Hover Effect */
-.date-picker-container input[type="date"]:hover {
-    background-color: rgba(255, 255, 255, 0.85);
 }
 
 /* Footer */
