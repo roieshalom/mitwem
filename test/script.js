@@ -122,7 +122,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.items && data.items.length > 0) {
                 console.log(`✅ Found ${data.items.length} event(s) for ${isoDate}`);
-                return data.items.map(event => event.summary.trim());
+
+                // ✅ Check if the event is ongoing from a previous day
+                const validEvents = data.items.filter(event => {
+                    const eventStart = event.start?.dateTime || event.start?.date;
+                    const eventEnd = event.end?.dateTime || event.end?.date;
+                    
+                    // Ensure the event is still active on the selected date
+                    return eventStart <= isoDate && (!eventEnd || eventEnd > isoDate);
+                });
+
+                console.log(`✅ Filtered events for ${isoDate}:`, validEvents);
+                return validEvents.length > 0 ? validEvents.map(event => event.summary.trim()) : null;
             } else {
                 console.log(`ℹ️ No events found for ${isoDate}`);
                 return null;
@@ -188,23 +199,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             console.log("📝 Weekend Raw Data (Before Filter):", results);
 
-            const cleanedResults = results.map(event => event && event[0] && event[0].trim() ? event[0].trim() : null);
-            console.log("🧹 Cleaned Weekend Data:", cleanedResults);
+            const uniqueValues = [...new Set(results.flat().filter(Boolean))];
 
-            if (cleanedResults.every(event => event === null)) {
-                console.log("✅ No events found for the weekend.");
-                weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${translations.noData[userLang]}`;
-                return;
-            }
-
-            const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
-
-            let weekendStatus;
-            if (uniqueValues.length === 1) {
-                weekendStatus = translateEvent(uniqueValues[0], userLang, false);
-            } else {
-                weekendStatus = translations.mixed[userLang];
-            }
+            let weekendStatus = uniqueValues.length === 1 
+                ? translateEvent(uniqueValues[0], userLang, false) 
+                : translations.mixed[userLang];
 
             console.log("✅ Weekend Processed Status:", weekendStatus);
             weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
