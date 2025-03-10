@@ -86,7 +86,7 @@ h1 {
     flex-direction: row-reverse;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start; /* ✅ Fixes alignment */
     gap: 10px;
 }
 
@@ -98,17 +98,19 @@ h1 {
 
 /* ✅ Ensures the correct word order in RTL mode */
 .rtl .date-picker-container span:first-child {
-    order: 1; /* "בתאריך" appears first */
+    order: 1; /* ✅ "בתאריך" now appears first */
+    white-space: nowrap;
 }
 
 .rtl .date-picker-container input[type="date"] {
-    order: 2; /* Date picker comes second */
+    order: 2; /* ✅ Date picker comes second */
     direction: rtl;
     text-align: right;
 }
 
 .rtl .date-picker-container span:last-child {
-    order: 3; /* The rest of the sentence appears last */
+    order: 3; /* ✅ The rest of the sentence appears last */
+    white-space: nowrap;
 }
 
 /* ✅ Divider Below "Next Weekend" Section */
@@ -125,8 +127,8 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px; /* Adds spacing between elements */
-    font-size: 18px; /* ✅ Reduced text size */
+    gap: 10px;
+    font-size: 18px;
     color: white;
 }
 
