@@ -113,13 +113,24 @@ h1 {
 
 /* ✅ Style the Date Picker */
 .date-picker-container input[type="date"] {
-    font-size: 16px; /* ✅ Reduced text size */
+    font-size: 16px;
     padding: 5px;
     border-radius: 5px;
     border: none;
     outline: none;
-    background-color: rgba(255, 255, 255, 0.7); /* ✅ Faded background */
+    background-color: rgba(255, 255, 255, 0.5);
     color: #333;
+}
+
+/* 🎨 Date Picker Hover Effect */
+.date-picker-container input[type="date"]:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* ✅ RTL Fix: Set Date Picker to RTL for Hebrew */
+.rtl .date-picker-container input[type="date"] {
+    direction: rtl;
+    text-align: right;
 }
 
 /* 🎨 Date Picker Hover Effect */
