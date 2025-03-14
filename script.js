@@ -61,7 +61,14 @@ document.addEventListener('DOMContentLoaded', function () {
         document.title = translations.pageTitle[userLang];
         document.getElementById("page-heading").textContent = translations.pageHeading[userLang];
         statusElement.textContent = translations.loading[userLang];
-        weekendStatusElement.textContent = translations.loadingWeekend[userLang];
+
+        // ✅ Hide "Next Weekend" section if it's a weekend (Friday-Sunday)
+        const today = new Date();
+        if (isWeekend(today)) {
+            weekendStatusElement.style.display = "none";  // ✅ Completely hide the element
+        } else {
+            weekendStatusElement.textContent = translations.loadingWeekend[userLang];
+        }
 
         if (document.querySelector(".date-picker-container span")) {
             document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
@@ -184,25 +191,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 statusElement.textContent = translations.noData[userLang];
             }
 
-            const { friday, saturday, sunday } = getUpcomingWeekendDates();
-            const results = await Promise.all([
-                fetchEventsForDate(friday),
-                fetchEventsForDate(saturday),
-                fetchEventsForDate(sunday)
-            ]);
-
-            console.log("📝 Weekend Raw Data (Before Filter):", results);
-
-            const uniqueValues = [...new Set(results.flat().filter(Boolean))];
-
-            let weekendStatus = uniqueValues.length === 1 
-                ? translateEvent(uniqueValues[0], userLang, false) 
-                : translations.mixed[userLang];
-
-            console.log("✅ Weekend Processed Status:", weekendStatus);
-
-            // ✅ Ensure the "Next Weekend" line is NEVER set during weekends
             if (!isWeekend(today)) {
+                const { friday, saturday, sunday } = getUpcomingWeekendDates();
+                const results = await Promise.all([
+                    fetchEventsForDate(friday),
+                    fetchEventsForDate(saturday),
+                    fetchEventsForDate(sunday)
+                ]);
+
+                console.log("📝 Weekend Raw Data (Before Filter):", results);
+
+                const uniqueValues = [...new Set(results.flat().filter(Boolean))];
+
+                let weekendStatus = uniqueValues.length === 1 
+                    ? translateEvent(uniqueValues[0], userLang, false) 
+                    : translations.mixed[userLang];
+
+                console.log("✅ Weekend Processed Status:", weekendStatus);
                 weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
             }
         })
