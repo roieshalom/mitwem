@@ -1,6 +1,6 @@
 /* General page styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Heebo', Arial, sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;
@@ -84,12 +84,33 @@ h1 {
 /* ✅ Adjust date picker section for RTL */
 .rtl .date-picker-container {
     flex-direction: row-reverse;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* ✅ Fixes alignment */
+    gap: 10px;
 }
 
 /* ✅ Fix input text direction inside date picker */
 .rtl input[type="date"] {
     direction: rtl;
     text-align: right;
+}
+
+/* ✅ Ensures the correct word order in RTL mode */
+.rtl .date-picker-container span:first-child {
+    order: 1; /* ✅ "בתאריך" now appears first */
+    white-space: nowrap;
+}
+
+.rtl .date-picker-container input[type="date"] {
+    order: 2; /* ✅ Date picker comes second */
+    direction: rtl;
+    text-align: right;
+}
+
+.rtl .date-picker-container span:last-child {
+    order: 3; /* ✅ The rest of the sentence appears last */
+    white-space: nowrap;
 }
 
 /* ✅ Divider Below "Next Weekend" Section */
@@ -106,18 +127,31 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px; /* Adds spacing between elements */
-    font-size: 24px; /* Match "With Mom" text size */
+    gap: 10px;
+    font-size: 18px;
     color: white;
 }
 
 /* ✅ Style the Date Picker */
 .date-picker-container input[type="date"] {
-    font-size: 20px;
+    font-size: 16px;
     padding: 5px;
     border-radius: 5px;
     border: none;
     outline: none;
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #333;
+}
+
+/* 🎨 Date Picker Hover Effect */
+.date-picker-container input[type="date"]:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* ✅ RTL Fix: Set Date Picker to RTL for Hebrew */
+.rtl .date-picker-container input[type="date"] {
+    direction: rtl;
+    text-align: right;
 }
 
 /* Footer */
@@ -196,11 +230,11 @@ footer#footer {
     }
 
     .date-picker-container {
-        font-size: 20px;
+        font-size: 16px;
     }
 
     .date-picker-container input[type="date"] {
-        font-size: 18px;
+        font-size: 14px;
     }
 
     /* ✅ Make sure RTL alignment works on mobile */

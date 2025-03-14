@@ -9,12 +9,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typeof CONFIG !== 'undefined' && CONFIG.CALENDAR_ID && CONFIG.API_KEY) {
                     CALENDAR_ID = CONFIG.CALENDAR_ID;
                     API_KEY = CONFIG.API_KEY;
+                    console.log(`✅ Config loaded: CALENDAR_ID=${CALENDAR_ID}, API_KEY=${API_KEY}`);
                     resolve();
                 } else {
+                    console.error("❌ CONFIG is undefined or missing keys!");
                     reject("CONFIG is undefined or missing keys!");
                 }
             };
-            script.onerror = () => reject("Failed to load config.js");
+            script.onerror = () => reject("❌ Failed to load config.js");
             document.head.appendChild(script);
         });
     }
@@ -27,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (typeof translations !== 'undefined') {
                     resolve();
                 } else {
+                    console.error("❌ Translations file is missing or incorrect.");
                     reject("Translations file is missing or incorrect.");
                 }
             };
@@ -37,11 +40,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const statusElement = document.getElementById("status");
     const weekendStatusElement = document.getElementById("weekend-status");
+    const datePicker = document.getElementById("date-picker");
+    const selectedDateStatus = document.getElementById("selected-date-status");
 
     let userLang = navigator.language.startsWith("de") ? "de" :
                    navigator.language.startsWith("he") ? "he" : "en";
 
-    // ✅ Apply RTL class if Hebrew is detected
     if (userLang === "he") {
         document.body.classList.add("rtl");
     } else {
@@ -49,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function applyTranslations() {
-        if (!translations || !translations.pageTitle) {
+        if (typeof translations === "undefined" || !translations.pageTitle) {
             console.error("❌ Translations not loaded correctly.");
             return;
         }
@@ -58,6 +62,14 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("page-heading").textContent = translations.pageHeading[userLang];
         statusElement.textContent = translations.loading[userLang];
         weekendStatusElement.textContent = translations.loadingWeekend[userLang];
+
+        // ✅ Translate "On" text before the date picker
+        if (document.querySelector(".date-picker-container span")) {
+            document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
+        }
+
+        // ✅ Default text for date selection
+        selectedDateStatus.textContent = translations.noData[userLang];
     }
 
     function getLocalISODate(date) {
@@ -66,59 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function isWeekend(date) {
         const day = date.getDay();
-        return day === 5 || day === 6 || day === 0; // Friday, Saturday, Sunday
-    }
-
-    async function fetchEventsForDate(date) {
-        if (!CALENDAR_ID || !API_KEY) {
-            console.error("❌ API keys are not loaded!");
-            return null;
-        }
-
-        const isoDate = getLocalISODate(date);
-        const timeMin = `${isoDate}T00:00:00Z`;  
-        const timeMax = `${isoDate}T23:59:59Z`;  
-
-        try {
-            const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&key=${API_KEY}`);
-
-            if (!response.ok) {
-                console.error(`❌ API Request Failed with Status: ${response.status}`);
-                return null;
-            }
-
-            const data = await response.json();
-            console.log(`📅 Checking events for ${isoDate}:`, data.items);
-
-            if (data.items && data.items.length > 0) {
-                const validEvents = data.items.filter(event => {
-                    const eventStart = event.start?.dateTime || event.start?.date; 
-                    const eventEnd = event.end?.dateTime || event.end?.date;
-                    return (eventStart <= isoDate && (!eventEnd || eventEnd >= isoDate));
-                });
-
-                console.log(`✅ Filtered events for ${isoDate}:`, validEvents);
-                return validEvents.length > 0 ? validEvents[0].summary.trim() : null;
-            } else {
-                return null;
-            }
-        } catch (error) {
-            console.error("❌ Error fetching calendar data:", error);
-            return null;
-        }
-    }
-
-    function translateEvent(eventTitle, lang, isEntireWeekend) {
-        if (!translations || !translations.events) return "No Data Available";
-
-        let translatedText = translations.events[eventTitle] && translations.events[eventTitle][lang] 
-            ? translations.events[eventTitle][lang] 
-            : translations.noData[lang];
-
-        if (isEntireWeekend && translatedText !== translations.noData[lang]) {
-            translatedText += ` (${translations.entireWeekend[lang]})`;
-        }
-        return translatedText;
+        return day === 5 || day === 6 || day === 0;
     }
 
     function getUpcomingWeekendDates() {
@@ -137,14 +97,98 @@ document.addEventListener('DOMContentLoaded', function () {
         return { friday, saturday, sunday };
     }
 
+    async function fetchEventsForDate(date) {
+        if (!CALENDAR_ID || !API_KEY) {
+            console.error("❌ API keys are missing, stopping request.");
+            return null;
+        }
+
+        const isoDate = getLocalISODate(date);
+        const timeMin = `${isoDate}T00:00:00Z`;  
+        const timeMax = `${isoDate}T23:59:59Z`;
+
+        console.log(`📡 Fetching events for: ${isoDate}`);
+
+        try {
+            const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&key=${API_KEY}`);
+
+            if (!response.ok) {
+                console.error(`❌ API Request Failed: ${response.status} - ${response.statusText}`);
+                return null;
+            }
+
+            const data = await response.json();
+            console.log(`📅 API Response for ${isoDate}:`, data);
+
+            if (data.items && data.items.length > 0) {
+                console.log(`✅ Found ${data.items.length} event(s) for ${isoDate}`);
+
+                // ✅ Check if the event is ongoing from a previous day
+                const validEvents = data.items.filter(event => {
+                    const eventStart = event.start?.dateTime || event.start?.date;
+                    const eventEnd = event.end?.dateTime || event.end?.date;
+                    
+                    // Ensure the event is still active on the selected date
+                    return eventStart <= isoDate && (!eventEnd || eventEnd > isoDate);
+                });
+
+                console.log(`✅ Filtered events for ${isoDate}:`, validEvents);
+                return validEvents.length > 0 ? validEvents.map(event => event.summary.trim()) : null;
+            } else {
+                console.log(`ℹ️ No events found for ${isoDate}`);
+                return null;
+            }
+        } catch (error) {
+            console.error("❌ Error fetching calendar data:", error);
+            return null;
+        }
+    }
+
+    function translateEvent(eventTitle, lang, isEntireWeekend) {
+        if (!translations || !translations.events) return translations.noData[lang];
+
+        let translatedText = translations.events[eventTitle] && translations.events[eventTitle][lang] 
+            ? translations.events[eventTitle][lang] 
+            : translations.noData[lang];
+
+        if (isEntireWeekend && translatedText !== translations.noData[lang]) {
+            translatedText += ` (${translations.entireWeekend[lang]})`;
+        }
+        return translatedText;
+    }
+
+    async function updateSelectedDateStatus(selectedDate) {
+        if (!selectedDate) return;
+
+        const date = new Date(selectedDate);
+        const isWeekendDate = isWeekend(date);
+        const event = await fetchEventsForDate(date);
+        
+        selectedDateStatus.textContent = event 
+            ? translateEvent(event[0], userLang, isWeekendDate) 
+            : translations.noData[userLang];
+    }
+
+    // ✅ Listen for date picker changes
+    datePicker.addEventListener("change", (event) => {
+        console.log(`📅 Selected Date: ${event.target.value}`);
+        updateSelectedDateStatus(event.target.value);
+    });
+
     Promise.all([loadConfig(), loadTranslations()])
         .then(async () => {
             applyTranslations();
 
             const today = new Date();
-            const isWeekendToday = isWeekend(today);
+            console.log("🔍 Checking events for today...");
             const todayEvent = await fetchEventsForDate(today);
-            statusElement.textContent = translateEvent(todayEvent, userLang, isWeekendToday);
+            console.log("📊 Today’s events:", todayEvent);
+
+            if (todayEvent) {
+                statusElement.textContent = translateEvent(todayEvent[0], userLang, isWeekend(today));
+            } else {
+                statusElement.textContent = translations.noData[userLang];
+            }
 
             const { friday, saturday, sunday } = getUpcomingWeekendDates();
             const results = await Promise.all([
@@ -155,33 +199,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             console.log("📝 Weekend Raw Data (Before Filter):", results);
 
-            const cleanedResults = results.map(event => event && event.trim() ? event.trim() : null);
-            console.log("🧹 Cleaned Weekend Data:", cleanedResults);
+            const uniqueValues = [...new Set(results.flat().filter(Boolean))];
 
-            if (cleanedResults.every(event => event === null)) {
-                console.log("✅ No events found for the weekend.");
-                weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${translations.noData[userLang]}`;
-                return;
-            }
-
-            const uniqueValues = [...new Set(cleanedResults.filter(Boolean))];
-
-            let weekendStatus;
-            if (uniqueValues.length === 1) {
-                weekendStatus = translateEvent(uniqueValues[0], userLang, false);
-            } else {
-                weekendStatus = translations.mixed[userLang];
-            }
+            let weekendStatus = uniqueValues.length === 1 
+                ? translateEvent(uniqueValues[0], userLang, false) 
+                : translations.mixed[userLang];
 
             console.log("✅ Weekend Processed Status:", weekendStatus);
-
-            // 🛠️ HIDE "Next Weekend" during weekends (Friday-Sunday)
-            if (isWeekendToday) {
-                weekendStatusElement.style.display = "none";
-            } else {
-                weekendStatusElement.style.display = "block";
-                weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
-            }
+            weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
         })
         .catch(error => {
             console.error("❌ Failed to load dependencies:", error);
