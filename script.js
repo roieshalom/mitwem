@@ -63,12 +63,10 @@ document.addEventListener('DOMContentLoaded', function () {
         statusElement.textContent = translations.loading[userLang];
         weekendStatusElement.textContent = translations.loadingWeekend[userLang];
 
-        // ✅ Translate "On" text before the date picker
         if (document.querySelector(".date-picker-container span")) {
             document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
         }
 
-        // ✅ Default text for date selection
         selectedDateStatus.textContent = translations.noData[userLang];
     }
 
@@ -123,12 +121,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.items && data.items.length > 0) {
                 console.log(`✅ Found ${data.items.length} event(s) for ${isoDate}`);
 
-                // ✅ Check if the event is ongoing from a previous day
                 const validEvents = data.items.filter(event => {
                     const eventStart = event.start?.dateTime || event.start?.date;
                     const eventEnd = event.end?.dateTime || event.end?.date;
-                    
-                    // Ensure the event is still active on the selected date
                     return eventStart <= isoDate && (!eventEnd || eventEnd > isoDate);
                 });
 
@@ -169,7 +164,6 @@ document.addEventListener('DOMContentLoaded', function () {
             : translations.noData[userLang];
     }
 
-    // ✅ Listen for date picker changes
     datePicker.addEventListener("change", (event) => {
         console.log(`📅 Selected Date: ${event.target.value}`);
         updateSelectedDateStatus(event.target.value);
@@ -206,12 +200,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 : translations.mixed[userLang];
 
             console.log("✅ Weekend Processed Status:", weekendStatus);
-            if (!isWeekendToday) {
+
+            // ✅ Ensure the "Next Weekend" line is NEVER set during weekends
+            if (!isWeekend(today)) {
                 weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
-            } else {
-                weekendStatusElement.textContent = ""; // Ensure it's not displayed at all
             }
-                    })
+        })
         .catch(error => {
             console.error("❌ Failed to load dependencies:", error);
             statusElement.textContent = translations.failedLoad[userLang] || "Failed to load data.";
