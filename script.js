@@ -62,13 +62,15 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("page-heading").textContent = translations.pageHeading[userLang];
         statusElement.textContent = translations.loading[userLang];
 
-        // ✅ Hide "Next Weekend" section if it's a weekend (Friday-Sunday)
-        const today = new Date();
-        if (isWeekend(today)) {
-            weekendStatusElement.style.display = "none";  // ✅ Completely hide the element
-        } else {
-            weekendStatusElement.textContent = translations.loadingWeekend[userLang];
-        }
+// ✅ Hide "Next Weekend" initially (prevent flickering)
+weekendStatusElement.style.display = "none";
+
+const today = new Date();
+if (!isWeekend(today)) {
+    weekendStatusElement.style.display = "block"; // ✅ Show only if it's not a weekend
+    weekendStatusElement.textContent = translations.loadingWeekend[userLang];
+}
+
 
         if (document.querySelector(".date-picker-container span")) {
             document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
