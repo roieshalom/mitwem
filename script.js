@@ -174,7 +174,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             console.log("✅ Weekend Processed Status:", weekendStatus);
-            weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
+
+            // 🛠️ HIDE "Next Weekend" during weekends (Friday-Sunday)
+            if (isWeekendToday) {
+                weekendStatusElement.style.display = "none";
+            } else {
+                weekendStatusElement.style.display = "block";
+                weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
+            }
         })
         .catch(error => {
             console.error("❌ Failed to load dependencies:", error);
