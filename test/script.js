@@ -61,14 +61,21 @@ document.addEventListener('DOMContentLoaded', function () {
         document.title = translations.pageTitle[userLang];
         document.getElementById("page-heading").textContent = translations.pageHeading[userLang];
         statusElement.textContent = translations.loading[userLang];
-        weekendStatusElement.textContent = translations.loadingWeekend[userLang];
 
-        // ✅ Translate "On" text before the date picker
+// ✅ Hide "Next Weekend" initially (prevent flickering)
+weekendStatusElement.style.display = "none";
+
+const today = new Date();
+if (!isWeekend(today)) {
+    weekendStatusElement.style.display = "block"; // ✅ Show only if it's not a weekend
+    weekendStatusElement.textContent = translations.loadingWeekend[userLang];
+}
+
+
         if (document.querySelector(".date-picker-container span")) {
             document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
         }
 
-        // ✅ Default text for date selection
         selectedDateStatus.textContent = translations.noData[userLang];
     }
 
@@ -123,12 +130,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.items && data.items.length > 0) {
                 console.log(`✅ Found ${data.items.length} event(s) for ${isoDate}`);
 
-                // ✅ Check if the event is ongoing from a previous day
                 const validEvents = data.items.filter(event => {
                     const eventStart = event.start?.dateTime || event.start?.date;
                     const eventEnd = event.end?.dateTime || event.end?.date;
-                    
-                    // Ensure the event is still active on the selected date
                     return eventStart <= isoDate && (!eventEnd || eventEnd > isoDate);
                 });
 
@@ -169,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function () {
             : translations.noData[userLang];
     }
 
-    // ✅ Listen for date picker changes
     datePicker.addEventListener("change", (event) => {
         console.log(`📅 Selected Date: ${event.target.value}`);
         updateSelectedDateStatus(event.target.value);
@@ -190,23 +193,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 statusElement.textContent = translations.noData[userLang];
             }
 
-            const { friday, saturday, sunday } = getUpcomingWeekendDates();
-            const results = await Promise.all([
-                fetchEventsForDate(friday),
-                fetchEventsForDate(saturday),
-                fetchEventsForDate(sunday)
-            ]);
+            if (!isWeekend(today)) {
+                const { friday, saturday, sunday } = getUpcomingWeekendDates();
+                const results = await Promise.all([
+                    fetchEventsForDate(friday),
+                    fetchEventsForDate(saturday),
+                    fetchEventsForDate(sunday)
+                ]);
 
-            console.log("📝 Weekend Raw Data (Before Filter):", results);
+                console.log("📝 Weekend Raw Data (Before Filter):", results);
 
-            const uniqueValues = [...new Set(results.flat().filter(Boolean))];
+                const uniqueValues = [...new Set(results.flat().filter(Boolean))];
 
-            let weekendStatus = uniqueValues.length === 1 
-                ? translateEvent(uniqueValues[0], userLang, false) 
-                : translations.mixed[userLang];
+                let weekendStatus = uniqueValues.length === 1 
+                    ? translateEvent(uniqueValues[0], userLang, false) 
+                    : translations.mixed[userLang];
 
-            console.log("✅ Weekend Processed Status:", weekendStatus);
-            weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
+                console.log("✅ Weekend Processed Status:", weekendStatus);
+                weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
+            }
         })
         .catch(error => {
             console.error("❌ Failed to load dependencies:", error);
