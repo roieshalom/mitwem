@@ -61,8 +61,12 @@ document.addEventListener('DOMContentLoaded', function () {
         document.title = translations.pageTitle[userLang];
         document.getElementById("page-heading").textContent = translations.pageHeading[userLang];
         statusElement.textContent = translations.loading[userLang];
-        weekendStatusElement.textContent = translations.loadingWeekend[userLang];
-
+        if (!isWeekendToday) {
+            weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
+        } else {
+            weekendStatusElement.textContent = ""; // Ensure it's not displayed at all
+        }
+        
         // ✅ Translate "On" text before the date picker
         if (document.querySelector(".date-picker-container span")) {
             document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
