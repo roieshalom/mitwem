@@ -206,8 +206,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 : translations.mixed[userLang];
 
             console.log("✅ Weekend Processed Status:", weekendStatus);
-            weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
-        })
+            if (!isWeekendToday) {
+                weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
+            } else {
+                weekendStatusElement.textContent = ""; // Ensure it's not displayed at all
+            }
+                    })
         .catch(error => {
             console.error("❌ Failed to load dependencies:", error);
             statusElement.textContent = translations.failedLoad[userLang] || "Failed to load data.";
