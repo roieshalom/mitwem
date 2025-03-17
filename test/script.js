@@ -62,15 +62,14 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("page-heading").textContent = translations.pageHeading[userLang];
         statusElement.textContent = translations.loading[userLang];
 
-// ✅ Hide "Next Weekend" initially (prevent flickering)
-weekendStatusElement.style.display = "none";
+        // ✅ Hide "Next Weekend" initially (prevent flickering)
+        weekendStatusElement.style.display = "none";
 
-const today = new Date();
-if (!isWeekend(today)) {
-    weekendStatusElement.style.display = "block"; // ✅ Show only if it's not a weekend
-    weekendStatusElement.textContent = translations.loadingWeekend[userLang];
-}
-
+        const today = new Date();
+        if (!isWeekend(today)) {
+            weekendStatusElement.style.display = "block"; // ✅ Show only if it's not a weekend
+            weekendStatusElement.textContent = translations.loadingWeekend[userLang];
+        }
 
         if (document.querySelector(".date-picker-container span")) {
             document.querySelector(".date-picker-container span").textContent = translations.onDate[userLang];
@@ -205,9 +204,11 @@ if (!isWeekend(today)) {
 
                 const uniqueValues = [...new Set(results.flat().filter(Boolean))];
 
-                let weekendStatus = uniqueValues.length === 1 
-                    ? translateEvent(uniqueValues[0], userLang, false) 
-                    : translations.mixed[userLang];
+                let weekendStatus = uniqueValues.length === 0 
+                    ? translations.noData[userLang] 
+                    : (uniqueValues.length === 1 
+                        ? translateEvent(uniqueValues[0], userLang, false) 
+                        : translations.mixed[userLang]);
 
                 console.log("✅ Weekend Processed Status:", weekendStatus);
                 weekendStatusElement.textContent = `${translations.nextWeekend[userLang]}: ${weekendStatus}`;
