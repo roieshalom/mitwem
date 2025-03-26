@@ -1,3 +1,7 @@
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
+
+
 document.addEventListener('DOMContentLoaded', function () {
     let CALENDAR_ID, API_KEY;
 
@@ -219,3 +223,16 @@ document.addEventListener('DOMContentLoaded', function () {
             statusElement.textContent = translations.failedLoad[userLang] || "Failed to load data.";
         });
 });
+
+flatpickr("#date-picker", {
+    dateFormat: "Y-m-d",
+    defaultDate: new Date(),
+    locale: {
+      firstDayOfWeek: 1 // 📅 Start on Monday
+    },
+    onChange: function(selectedDates) {
+      const selectedDate = selectedDates[0];
+      updateSelectedDateStatus(selectedDate); // Your existing handler
+    }
+  });
+  

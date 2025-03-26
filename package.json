@@ -1,0 +1,28 @@
+{
+  "name": "mitwem",
+  "version": "1.0.0",
+  "main": "config.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roieshalom/mitwem.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/roieshalom/mitwem/issues"
+  },
+  "homepage": "https://github.com/roieshalom/mitwem#readme",
+  "description": "",
+  "devDependencies": {
+    "vite": "^6.2.3"
+  },
+  "dependencies": {
+    "flatpickr": "^4.6.13"
+  }
+}
