@@ -1,7 +1,6 @@
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
-
 document.addEventListener('DOMContentLoaded', function () {
     let CALENDAR_ID, API_KEY;
 
@@ -166,21 +165,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function updateSelectedDateStatus(selectedDate) {
         if (!selectedDate) return;
-
+    
         const date = new Date(selectedDate);
         const isWeekendDate = isWeekend(date);
+        console.log("📅 Picked date:", selectedDate, "| Parsed:", date.toISOString());
+    
         const event = await fetchEventsForDate(date);
-        
+        console.log("📥 Event from calendar API:", event);
+    
         selectedDateStatus.textContent = event 
             ? translateEvent(event[0], userLang, isWeekendDate) 
             : translations.noData[userLang];
     }
 
+    // ✅ Listen for input changes
     datePicker.addEventListener("change", (event) => {
         console.log(`📅 Selected Date: ${event.target.value}`);
         updateSelectedDateStatus(event.target.value);
     });
 
+    // ✅ Initialize Flatpickr
+    flatpickr("#date-picker", {
+        dateFormat: "Y-m-d",
+        locale: {
+            firstDayOfWeek: 1 // Start week on Monday
+        },
+        onChange: function(selectedDates, dateStr, instance) {
+            console.log(`📅 Selected Date (flatpickr): ${dateStr}`);
+            updateSelectedDateStatus(dateStr);
+        }
+    });
+
+    // ✅ Main initialization
     Promise.all([loadConfig(), loadTranslations()])
         .then(async () => {
             applyTranslations();
@@ -223,16 +239,3 @@ document.addEventListener('DOMContentLoaded', function () {
             statusElement.textContent = translations.failedLoad[userLang] || "Failed to load data.";
         });
 });
-
-flatpickr("#date-picker", {
-    dateFormat: "Y-m-d",
-    defaultDate: new Date(),
-    locale: {
-      firstDayOfWeek: 1 // 📅 Start on Monday
-    },
-    onChange: function(selectedDates) {
-      const selectedDate = selectedDates[0];
-      updateSelectedDateStatus(selectedDate); // Your existing handler
-    }
-  });
-  
