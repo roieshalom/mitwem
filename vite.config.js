@@ -1,5 +1,5 @@
 export default {
-    base: '/mitwem/', // or '/' if it's your root domain
+    base: '/mitwem/',
     build: {
       outDir: 'docs'
     }
