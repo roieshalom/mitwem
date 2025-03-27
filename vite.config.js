@@ -1,6 +1,7 @@
-// vite.config.js
 export default {
-    root: './',
-    publicDir: 'assets',
-    base: '/mitwem/', // Required for GH Pages if hosted on a subpath
-};
+    base: '/mitwem/', // or '/' if it's your root domain
+    build: {
+      outDir: 'docs'
+    }
+  };
+  
