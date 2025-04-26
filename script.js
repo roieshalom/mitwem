@@ -180,16 +180,34 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!selectedDate) return;
     
         const date = new Date(selectedDate);
-        const isWeekendDate = isWeekend(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Make sure time is cleared for fair comparison
+    
         console.log("📅 Picked date:", selectedDate, "| Parsed:", date.toISOString());
+    
+        // 👉 ADD THIS: Check if selected date is in the future
+        if (date > today) {
+            console.log("✅ Selected date is in the future");
+    
+            // ➡️ GA4 Track future date selection
+            gtag('event', 'future_date_filter_used', {
+                event_category: 'engagement',
+                event_label: 'Future date selected',
+                value: 1
+            });
+            console.log("📈 GA4 Event Sent: Future date selected");
+        } else {
+            console.log("ℹ️ Selected date is today or in the past");
+        }
     
         const event = await fetchEventsForDate(date);
         console.log("📥 Event from calendar API:", event);
     
         selectedDateStatus.textContent = event 
-            ? translateEvent(event[0], userLang, isWeekendDate) 
+            ? translateEvent(event[0], userLang, isWeekend(date)) 
             : translations.noData[userLang];
     }
+    
 
     // ✅ Listen for input changes
     datePicker.addEventListener("change", (event) => {
