@@ -1,3 +1,16 @@
+// Add Google Analytics dynamically
+(function() {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-9N8E0LI302";
+    document.head.appendChild(script);
+  
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-9N8E0LI302');
+  })();
+  
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
